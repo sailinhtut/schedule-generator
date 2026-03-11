@@ -721,9 +721,13 @@ function generateSchedule() {
   const tableRows = [];
 
   lines.push(shop);
-  if (month) lines.push(month + ' လ');
+  if (month) {
+    const startDate = parseInt(document.getElementById('startDateInput')?.value || '1');
+    const endDate = startDate + 6;
+    lines.push(`${month} ${startDate} to ${endDate} - 2025 အချိန်ဇယား`);
+  }
   lines.push('');
-
+  
   for (let i = 0; i < 7; i++) {
     const date  = startDate + i;
     const dayMy = DAYS_MY[i];

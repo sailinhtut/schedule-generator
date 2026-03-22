@@ -9,7 +9,7 @@
 			rel="stylesheet"
 		/>
 		<style>
-			:root {
+			/* :root {
 				--bg: #0d0f14;
 				--surface: #161921;
 				--surface2: #1e2330;
@@ -22,6 +22,20 @@
 				--card-glow: rgba(245, 166, 35, 0.08);
 				--jp-accent: #7eb8f7;
 				--jp-glow: rgba(126, 184, 247, 0.08);
+			} */
+			:root {
+				--bg: #f4f5f7;
+				--surface: #ffffff;
+				--surface2: #f0f1f4;
+				--border: #dde0e8;
+				--accent: #d4880a;
+				--text: #1a1d26;
+				--text-muted: #6b7280;
+				--success: #2d8f63;
+				--danger: #c0394a;
+				--card-glow: rgba(212, 136, 10, 0.08);
+				--jp-accent: #2c7fd4;
+				--jp-glow: rgba(44, 127, 212, 0.08);
 			}
 
 			* {
@@ -38,7 +52,7 @@
 				overflow-x: hidden;
 			}
 
-			body::before {
+			/* body::before {
 				content: '';
 				position: fixed;
 				inset: 0;
@@ -56,8 +70,22 @@
 				pointer-events: none;
 				z-index: 0;
 				transition: background 0.5s;
+			} */
+			body::before {
+				background:
+					radial-gradient(
+						ellipse 60% 40% at 20% 20%,
+						rgba(212, 136, 10, 0.07) 0%,
+						transparent 60%
+					),
+					radial-gradient(
+						ellipse 50% 50% at 80% 80%,
+						rgba(232, 103, 42, 0.05) 0%,
+						transparent 60%
+					);
 			}
-			body.jp-mode::before {
+
+			/* body.jp-mode::before {
 				background:
 					radial-gradient(
 						ellipse 60% 40% at 20% 20%,
@@ -67,6 +95,20 @@
 					radial-gradient(
 						ellipse 50% 50% at 80% 80%,
 						rgba(180, 130, 240, 0.05) 0%,
+						transparent 60%
+					);
+			} */
+
+			body.jp-mode::before {
+				background:
+					radial-gradient(
+						ellipse 60% 40% at 20% 20%,
+						rgba(44, 127, 212, 0.08) 0%,
+						transparent 60%
+					),
+					radial-gradient(
+						ellipse 50% 50% at 80% 80%,
+						rgba(130, 80, 200, 0.05) 0%,
 						transparent 60%
 					);
 			}

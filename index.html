@@ -30,7 +30,6 @@
     overflow-x: hidden;
   }
 
-  /* Background texture */
   body::before {
     content: '';
     position: fixed;
@@ -45,7 +44,7 @@
   .container {
     position: relative;
     z-index: 1;
-    max-width: 900px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 40px 20px 60px;
   }
@@ -118,7 +117,6 @@
     background: linear-gradient(to right, var(--border), transparent);
   }
 
-  /* Grid layouts */
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 
@@ -127,7 +125,6 @@
     .grid-3 { grid-template-columns: 1fr 1fr; }
   }
 
-  /* Form fields */
   .field {
     display: flex;
     flex-direction: column;
@@ -165,87 +162,48 @@
     background-color: #232838;
   }
 
-  /* Day + time row */
-  .schedule-row {
+  /* ── Day block ── */
+  .day-block {
     background: var(--surface2);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-    margin-bottom: 10px;
-    display: grid;
-    grid-template-columns: 90px 1fr 1fr auto;
-    align-items: center;
-    gap: 16px;
-    transition: all 0.2s;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
   }
 
-  .schedule-row:hover { border-color: rgba(245,166,35,0.25); }
+  .day-block:hover { border-color: rgba(245,166,35,0.25); }
+
+  .day-block.is-off { opacity: 0.5; }
+  .day-block.is-off .sessions-wrapper { pointer-events: none; opacity: 0.35; }
+
+  /* Day header row */
+  .day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(245,166,35,0.04);
+  }
+
+  .day-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
 
   .day-badge {
     background: rgba(245,166,35,0.1);
     border: 1px solid rgba(245,166,35,0.2);
     color: var(--accent);
     font-size: 12px;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 6px;
-    text-align: center;
     font-family: 'Noto Sans Myanmar', sans-serif;
     white-space: nowrap;
-  }
-
-  .time-group {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .time-select-wrap {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex: 1;
-  }
-
-  .mini-select {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-family: inherit;
-    font-size: 13px;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    appearance: none;
-    -webkit-appearance: none;
-    min-width: 52px;
-    text-align: center;
-  }
-
-  .mini-select:focus { border-color: rgba(245,166,35,0.5); }
-
-  .period-select {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 8px 10px;
-    border-radius: 6px;
-    font-family: 'Noto Sans Myanmar', sans-serif;
-    font-size: 12px;
-    outline: none;
-    cursor: pointer;
-    transition: all 0.2s;
-    appearance: none;
-    -webkit-appearance: none;
     min-width: 80px;
-  }
-
-  .period-select:focus { border-color: rgba(245,166,35,0.5); }
-
-  .time-separator {
-    color: var(--text-muted);
-    font-size: 12px;
+    text-align: center;
   }
 
   /* Off toggle */
@@ -256,9 +214,7 @@
     cursor: pointer;
   }
 
-  .off-toggle input[type="checkbox"] {
-    display: none;
-  }
+  .off-toggle input[type="checkbox"] { display: none; }
 
   .toggle-btn {
     width: 44px;
@@ -298,16 +254,167 @@
     font-size: 11px;
     color: var(--text-muted);
     letter-spacing: 1px;
+    font-family: 'Noto Sans Myanmar', sans-serif;
+  }
+
+  /* Add session button */
+  .add-session-btn {
+    background: transparent;
+    border: 1px dashed rgba(245,166,35,0.35);
+    color: var(--accent);
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .add-session-btn:hover {
+    background: rgba(245,166,35,0.08);
+    border-color: rgba(245,166,35,0.6);
+  }
+
+  /* Sessions wrapper */
+  .sessions-wrapper {
+    padding: 14px 18px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Single session row */
+  .session-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 1fr auto;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    animation: fadeUp 0.25s ease both;
+    position: relative;
+  }
+
+  .session-row:hover { border-color: rgba(245,166,35,0.2); }
+
+  /* Session number badge */
+  .session-num {
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 7px;
     text-transform: uppercase;
   }
 
-  .schedule-row.is-off {
-    opacity: 0.5;
+  /* Shop mini-select */
+  .shop-select {
+    background: var(--surface2);
+    border: 1px solid rgba(245,166,35,0.25);
+    color: var(--accent);
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23f5a623' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+    padding-right: 26px;
   }
 
-  .schedule-row.is-off .time-group {
-    pointer-events: none;
-    opacity: 0.4;
+  .shop-select:focus { border-color: rgba(245,166,35,0.6); }
+
+  /* Time row within session */
+  .time-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .time-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .mini-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .mini-select:focus { border-color: rgba(245,166,35,0.5); }
+
+  .period-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 78px;
+  }
+
+  .period-select:focus { border-color: rgba(245,166,35,0.5); }
+
+  .time-separator {
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 0 2px;
+  }
+
+  /* Remove session button */
+  .remove-session-btn {
+    background: transparent;
+    border: 1px solid rgba(224,92,106,0.25);
+    color: rgba(224,92,106,0.6);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .remove-session-btn:hover {
+    background: rgba(224,92,106,0.12);
+    border-color: var(--danger);
+    color: var(--danger);
   }
 
   /* Generate button */
@@ -387,9 +494,7 @@
 
   .copy-btn:hover { background: rgba(245,166,35,0.2); }
 
-  .output-content {
-    padding: 32px 28px;
-  }
+  .output-content { padding: 32px 28px; }
 
   .output-text {
     font-family: 'Noto Sans Myanmar', sans-serif;
@@ -427,9 +532,9 @@
   }
 
   .preview-table td {
-    padding: 12px 16px;
+    padding: 10px 16px;
     border-bottom: 1px solid rgba(42,48,64,0.6);
-    vertical-align: middle;
+    vertical-align: top;
   }
 
   .preview-table tr:last-child td { border-bottom: none; }
@@ -445,26 +550,50 @@
     display: inline-block;
   }
 
-  .status-work {
-    color: var(--success);
+  .status-session {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .session-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 12px;
+    color: var(--success);
+    background: rgba(76,175,132,0.07);
+    border: 1px solid rgba(76,175,132,0.2);
+    border-radius: 5px;
+    padding: 3px 10px;
+  }
+
+  .session-shop-tag {
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.25);
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
   }
 
   /* Animations */
   @keyframes fadeDown {
     from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  @media (max-width: 600px) {
-    .schedule-row {
+  @media (max-width: 680px) {
+    .session-row {
       grid-template-columns: 1fr;
-      gap: 12px;
+      gap: 10px;
     }
     .builder-card { padding: 20px; }
     .output-content { padding: 20px; }
@@ -486,14 +615,6 @@
 
     <div class="grid-2" style="margin-bottom:28px;">
       <div class="field">
-        <label>Shop · ဆိုင်</label>
-        <select id="shopSelect">
-          <option value="Kashihara">Kashihara (橿原)</option>
-          <option value="Sakurai">Sakurai (桜井)</option>
-          <option value="Kashihara / Sakurai">Kashihara / Sakurai</option>
-        </select>
-      </div>
-      <div class="field">
         <label>Month · လ</label>
         <select id="monthSelect">
           <option value="">— မရွေးချယ်ရသေးပါ —</option>
@@ -509,6 +630,24 @@
           <option value="အောက်တိုဘာ">အောက်တိုဘာ (October)</option>
           <option value="နိုဝင်ဘာ">နိုဝင်ဘာ (November)</option>
           <option value="ဒီဇင်ဘာ">ဒီဇင်ဘာ (December)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Week · အပတ်</label>
+        <select id="weekNote">
+          <option value="ဒီအပတ်">ဒီအပတ်</option>
+          <option value="နောက်အပတ်">နောက်အပတ်</option>
+          <option value="ဒုတိယအပတ်">ဒုတိယအပတ်</option>
+          <option value="တတိယအပတ်">တတိယအပတ်</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:28px;" id="startDateRow">
+      <div class="field">
+        <label>Start Date · စတင်သည့်ရက်</label>
+        <select id="startDateInput">
+          <!-- filled by JS -->
         </select>
       </div>
     </div>
@@ -535,7 +674,7 @@
           <tr>
             <th>Date</th>
             <th>Day · နေ့</th>
-            <th>Status · အချိန်</th>
+            <th>Sessions · ရောက်ချိန်</th>
           </tr>
         </thead>
         <tbody id="previewBody"></tbody>
@@ -546,24 +685,28 @@
 </div>
 
 <script>
-const DAYS_MY = ['တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ','စနေ','တနင်္ဂနွေ'];
+const DAYS_MY  = ['တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ','စနေ','တနင်္ဂနွေ'];
 const PERIODS  = ['မနက်','နေ့လည်','ညနေ','ည'];
 const HOURS    = Array.from({length:12}, (_,i) => String(i+1));
-const LS_KEY   = 'burmese_schedule_v1';
+const SHOPS    = ['Kashihara','Sakurai','Kashihara / Sakurai'];
+const LS_KEY   = 'burmese_schedule_v2';
 
-// ── Hardcoded defaults (used only when localStorage is empty) ──
+// ── Defaults ──────────────────────────────────────────────────
+const DEFAULT_SESSION = { shop:'Kashihara', startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' };
+
 const DEFAULT_SCHEDULE = [
-  { off:false, startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' },
-  { off:true,  startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' },
-  { off:false, startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' },
-  { off:false, startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' },
-  { off:true,  startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' },
-  { off:false, startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' },
-  { off:false, startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' },
+  { off:false, sessions:[{ shop:'Kashihara',          startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:true,  sessions:[{ shop:'Kashihara',          startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Sakurai',            startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Kashihara',          startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:true,  sessions:[{ shop:'Kashihara',          startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Kashihara / Sakurai',startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Sakurai',            startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
 ];
-const DEFAULT_META = { shop:'Kashihara / Sakurai', month:'', startDate:'9', weekNote:'ဒီအပတ်' };
 
-// ── LocalStorage helpers ──────────────────────────────────────
+const DEFAULT_META = { month:'', startDate:'9', weekNote:'ဒီအပတ်' };
+
+// ── LocalStorage ──────────────────────────────────────────────
 function loadState() {
   try {
     const raw = localStorage.getItem(LS_KEY);
@@ -575,25 +718,29 @@ function saveState() {
   try {
     const state = {
       meta: {
-        shop:      document.getElementById('shopSelect')?.value      ?? DEFAULT_META.shop,
-        month:     document.getElementById('monthSelect')?.value     ?? DEFAULT_META.month,
-        startDate: document.getElementById('startDateInput')?.value  ?? DEFAULT_META.startDate,
-        weekNote:  document.getElementById('weekNote')?.value        ?? DEFAULT_META.weekNote,
+        month:     document.getElementById('monthSelect')?.value    ?? '',
+        startDate: document.getElementById('startDateInput')?.value ?? '9',
+        weekNote:  document.getElementById('weekNote')?.value       ?? 'ဒီအပတ်',
       },
-      days: DAYS_MY.map((_,i) => ({
-        off:    document.getElementById(`off-${i}`)?.checked   ?? false,
-        startH: document.getElementById(`startH-${i}`)?.value ?? '6',
-        startP: document.getElementById(`startP-${i}`)?.value ?? 'ညနေ',
-        endH:   document.getElementById(`endH-${i}`)?.value   ?? '3',
-        endP:   document.getElementById(`endP-${i}`)?.value   ?? 'မနက်',
-      }))
+      days: DAYS_MY.map((_,i) => {
+        const off = document.getElementById(`off-${i}`)?.checked ?? false;
+        const sessionEls = document.querySelectorAll(`.session-row[data-day="${i}"]`);
+        const sessions = Array.from(sessionEls).map(row => ({
+          shop:   row.querySelector('.shop-select')?.value   ?? 'Kashihara',
+          startH: row.querySelector('.s-startH')?.value      ?? '6',
+          startP: row.querySelector('.s-startP')?.value      ?? 'ညနေ',
+          endH:   row.querySelector('.s-endH')?.value        ?? '3',
+          endP:   row.querySelector('.s-endP')?.value        ?? 'မနက်',
+        }));
+        return { off, sessions: sessions.length ? sessions : [{ ...DEFAULT_SESSION }] };
+      })
     };
     localStorage.setItem(LS_KEY, JSON.stringify(state));
     flashSaveIndicator();
   } catch(e) {}
 }
 
-// ── Save indicator (subtle toast) ────────────────────────────
+// ── Save toast ────────────────────────────────────────────────
 function flashSaveIndicator() {
   let el = document.getElementById('saveToast');
   if (!el) return;
@@ -602,28 +749,36 @@ function flashSaveIndicator() {
   el._t = setTimeout(() => el.classList.remove('show'), 1800);
 }
 
-// ── Build schedule rows from saved or default data ───────────
-function buildRows(saved) {
-  const container = document.getElementById('scheduleRows');
-  container.innerHTML = '';
+// ── Shop options HTML ─────────────────────────────────────────
+function shopOptions(selected) {
+  return SHOPS.map(s => `<option value="${s}"${s===selected?' selected':''}>${s}</option>`).join('');
+}
 
-  DAYS_MY.forEach((day, i) => {
-    const def = (saved?.days?.[i]) ?? DEFAULT_SCHEDULE[i];
-    const row = document.createElement('div');
-    row.className = 'schedule-row' + (def.off ? ' is-off' : '');
-    row.id = `row-${i}`;
+function hourOptions(selected) {
+  return HOURS.map(h => `<option value="${h}"${h===selected?' selected':''}>${h}</option>`).join('');
+}
 
-    row.innerHTML = `
-      <div class="day-badge">${day}</div>
+function periodOptions(selected) {
+  return PERIODS.map(p => `<option value="${p}"${p===selected?' selected':''}>${p}</option>`).join('');
+}
+
+// ── Build single session row HTML ─────────────────────────────
+function makeSessionHTML(dayIdx, sesIdx, ses, canRemove) {
+  return `
+    <div class="session-row" data-day="${dayIdx}" data-ses="${sesIdx}">
+      <span class="session-num">Session ${sesIdx+1}</span>
+      <select class="shop-select" onchange="saveState()" title="Shop">
+        ${shopOptions(ses.shop)}
+      </select>
 
       <div class="time-group">
         <div class="time-select-wrap">
-          <select class="mini-select" id="startH-${i}" onchange="saveState()">
-            ${HOURS.map(h=>`<option value="${h}"${h===def.startH?' selected':''}>${h}</option>`).join('')}
+          <select class="mini-select s-startH" onchange="saveState()">
+            ${hourOptions(ses.startH)}
           </select>
           <span style="color:var(--text-muted);font-size:11px;">:</span>
-          <select class="period-select" id="startP-${i}" onchange="saveState()">
-            ${PERIODS.map(p=>`<option value="${p}"${p===def.startP?' selected':''}>${p}</option>`).join('')}
+          <select class="period-select s-startP" style="font-family:'Noto Sans Myanmar',sans-serif;" onchange="saveState()">
+            ${periodOptions(ses.startP)}
           </select>
         </div>
       </div>
@@ -631,103 +786,151 @@ function buildRows(saved) {
       <div class="time-group">
         <span class="time-separator">→</span>
         <div class="time-select-wrap">
-          <select class="mini-select" id="endH-${i}" onchange="saveState()">
-            ${HOURS.map(h=>`<option value="${h}"${h===def.endH?' selected':''}>${h}</option>`).join('')}
+          <select class="mini-select s-endH" onchange="saveState()">
+            ${hourOptions(ses.endH)}
           </select>
           <span style="color:var(--text-muted);font-size:11px;">:</span>
-          <select class="period-select" id="endP-${i}" onchange="saveState()">
-            ${PERIODS.map(p=>`<option value="${p}"${p===def.endP?' selected':''}>${p}</option>`).join('')}
+          <select class="period-select s-endP" style="font-family:'Noto Sans Myanmar',sans-serif;" onchange="saveState()">
+            ${periodOptions(ses.endP)}
           </select>
         </div>
       </div>
 
-      <label class="off-toggle">
-        <input type="checkbox" id="off-${i}" ${def.off?'checked':''} onchange="toggleOff(${i}); saveState();">
-        <div class="toggle-btn"></div>
-        <span class="off-label">ပိတ်</span>
-      </label>
-    `;
-    container.appendChild(row);
+      <button class="remove-session-btn" onclick="removeSession(${dayIdx}, this)" ${canRemove?'':'style="visibility:hidden;"'} title="Remove session">−</button>
+    </div>
+  `;
+}
+
+// ── Add session ───────────────────────────────────────────────
+function addSession(dayIdx) {
+  const wrapper = document.querySelector(`.sessions-wrapper[data-day="${dayIdx}"]`);
+  const count   = wrapper.querySelectorAll('.session-row').length;
+  const div     = document.createElement('div');
+  div.innerHTML = makeSessionHTML(dayIdx, count, { ...DEFAULT_SESSION }, true);
+  wrapper.appendChild(div.firstElementChild);
+  // show remove on first if now >=2
+  refreshRemoveBtns(dayIdx);
+  saveState();
+}
+
+// ── Remove session ────────────────────────────────────────────
+function removeSession(dayIdx, btn) {
+  const row     = btn.closest('.session-row');
+  const wrapper = row.closest('.sessions-wrapper');
+  if (wrapper.querySelectorAll('.session-row').length <= 1) return;
+  row.remove();
+  // re-number
+  wrapper.querySelectorAll('.session-row').forEach((r, i) => {
+    r.dataset.ses = i;
+    const num = r.querySelector('.session-num');
+    if (num) num.textContent = `Session ${i+1}`;
+  });
+  refreshRemoveBtns(dayIdx);
+  saveState();
+}
+
+// ── Show/hide remove buttons ──────────────────────────────────
+function refreshRemoveBtns(dayIdx) {
+  const wrapper = document.querySelector(`.sessions-wrapper[data-day="${dayIdx}"]`);
+  const rows    = wrapper.querySelectorAll('.session-row');
+  rows.forEach(r => {
+    const btn = r.querySelector('.remove-session-btn');
+    if (btn) btn.style.visibility = rows.length > 1 ? 'visible' : 'hidden';
   });
 }
 
-// ── Build the extra meta row (start date + week) ─────────────
-function addStartDateField(saved) {
-  const basicInfo = document.querySelector('.grid-2');
-  const extraRow = document.createElement('div');
-  extraRow.className = 'grid-2';
-  extraRow.style.marginBottom = '28px';
-
-  const savedStart = saved?.meta?.startDate ?? DEFAULT_META.startDate;
-  const savedWeek  = saved?.meta?.weekNote  ?? DEFAULT_META.weekNote;
-
-  extraRow.innerHTML = `
-    <div class="field">
-      <label>Start Date · စတင်သည့်ရက်</label>
-      <select id="startDateInput" onchange="saveState()">
-        ${Array.from({length:31},(_,i)=>`<option value="${i+1}"${String(i+1)===String(savedStart)?' selected':''}>${i+1}</option>`).join('')}
-      </select>
-    </div>
-    <div class="field">
-      <label>Week · အပတ်</label>
-      <select id="weekNote" onchange="saveState()">
-        ${['ဒီအပတ်','နောက်အပတ်','ဒုတိယအပတ်','တတိယအပတ်'].map(w=>
-          `<option value="${w}"${w===savedWeek?' selected':''}>${w}</option>`
-        ).join('')}
-      </select>
-    </div>
-  `;
-  basicInfo.insertAdjacentElement('afterend', extraRow);
+// ── Off toggle ────────────────────────────────────────────────
+function toggleOff(i) {
+  const cb    = document.getElementById(`off-${i}`);
+  const block = document.getElementById(`block-${i}`);
+  block.classList.toggle('is-off', cb.checked);
 }
 
-// ── Restore top-level selects ─────────────────────────────────
+// ── Build all day blocks ──────────────────────────────────────
+function buildRows(saved) {
+  const container = document.getElementById('scheduleRows');
+  container.innerHTML = '';
+
+  DAYS_MY.forEach((day, i) => {
+    const def      = (saved?.days?.[i]) ?? DEFAULT_SCHEDULE[i];
+    const sessions = def.sessions ?? [{ ...DEFAULT_SESSION }];
+    const isOff    = !!def.off;
+
+    const block = document.createElement('div');
+    block.className = 'day-block' + (isOff ? ' is-off' : '');
+    block.id = `block-${i}`;
+
+    const sessionsHTML = sessions.map((ses, si) =>
+      makeSessionHTML(i, si, ses, sessions.length > 1)
+    ).join('');
+
+    block.innerHTML = `
+      <div class="day-header">
+        <div class="day-header-left">
+          <div class="day-badge">${day}</div>
+          <label class="off-toggle">
+            <input type="checkbox" id="off-${i}" ${isOff?'checked':''} onchange="toggleOff(${i}); saveState();">
+            <div class="toggle-btn"></div>
+            <span class="off-label">ပိတ်</span>
+          </label>
+        </div>
+        <button class="add-session-btn" onclick="addSession(${i})">+ Add Session</button>
+      </div>
+      <div class="sessions-wrapper" data-day="${i}">
+        ${sessionsHTML}
+      </div>
+    `;
+    container.appendChild(block);
+  });
+}
+
+// ── Build start date dropdown ─────────────────────────────────
+function buildStartDate(saved) {
+  const sel      = document.getElementById('startDateInput');
+  const savedVal = saved?.meta?.startDate ?? DEFAULT_META.startDate;
+  sel.innerHTML  = Array.from({length:31},(_,i)=>
+    `<option value="${i+1}"${String(i+1)===String(savedVal)?' selected':''}>${i+1}</option>`
+  ).join('');
+}
+
+// ── Restore meta selects ──────────────────────────────────────
 function restoreMeta(saved) {
   if (!saved?.meta) return;
-  const shop  = document.getElementById('shopSelect');
   const month = document.getElementById('monthSelect');
-  if (shop  && saved.meta.shop)  shop.value  = saved.meta.shop;
-  if (month && saved.meta.month) month.value = saved.meta.month;
+  const week  = document.getElementById('weekNote');
+  if (month && saved.meta.month)    month.value = saved.meta.month;
+  if (week  && saved.meta.weekNote) week.value  = saved.meta.weekNote;
 }
 
-// ── Attach save listeners to top-level selects ───────────────
+// ── Attach listeners ──────────────────────────────────────────
 function attachMetaListeners() {
-  ['shopSelect','monthSelect'].forEach(id => {
+  ['monthSelect','weekNote','startDateInput'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', saveState);
   });
 }
 
-// ── Off-day toggle ────────────────────────────────────────────
-function toggleOff(i) {
-  const cb  = document.getElementById(`off-${i}`);
-  const row = document.getElementById(`row-${i}`);
-  row.classList.toggle('is-off', cb.checked);
-}
-
-// ── Clear saved data ──────────────────────────────────────────
+// ── Clear ─────────────────────────────────────────────────────
 function clearSavedData() {
   if (!confirm('Clear all saved data and reset to defaults?')) return;
   localStorage.removeItem(LS_KEY);
   location.reload();
 }
 
-// ── Generate schedule output ──────────────────────────────────
+// ── Generate schedule ─────────────────────────────────────────
 function generateSchedule() {
-  const shop      = document.getElementById('shopSelect').value;
   const month     = document.getElementById('monthSelect').value;
   const startDate = parseInt(document.getElementById('startDateInput')?.value || '9');
 
-  const lines = [];
+  const lines     = [];
   const tableRows = [];
 
-  lines.push(shop);
   if (month) {
-    const startDate = parseInt(document.getElementById('startDateInput')?.value || '1');
     const endDate = startDate + 6;
     lines.push(`${month} ${startDate} to ${endDate} - 2025 အချိန်ဇယား`);
   }
   lines.push('');
-  
+
   for (let i = 0; i < 7; i++) {
     const date  = startDate + i;
     const dayMy = DAYS_MY[i];
@@ -735,15 +938,22 @@ function generateSchedule() {
 
     if (isOff) {
       lines.push(`(${date})${dayMy}- ပိတ်`);
-      tableRows.push({ date, day: dayMy, status:'ပိတ်', isOff:true });
+      tableRows.push({ date, day: dayMy, isOff: true, sessions: [] });
     } else {
-      const startH = document.getElementById(`startH-${i}`).value;
-      const startP = document.getElementById(`startP-${i}`).value;
-      const endH   = document.getElementById(`endH-${i}`).value;
-      const endP   = document.getElementById(`endP-${i}`).value;
-      const timeStr = `${startP} ${startH}:00 - ${endP} ${endH}:00`;
-      lines.push(`(${date})${dayMy}- ${timeStr}`);
-      tableRows.push({ date, day: dayMy, status: timeStr, isOff:false });
+      const sesRows = document.querySelectorAll(`.session-row[data-day="${i}"]`);
+      const sessions = Array.from(sesRows).map(row => ({
+        shop:   row.querySelector('.shop-select')?.value ?? 'Kashihara',
+        startH: row.querySelector('.s-startH')?.value   ?? '6',
+        startP: row.querySelector('.s-startP')?.value   ?? 'ညနေ',
+        endH:   row.querySelector('.s-endH')?.value     ?? '3',
+        endP:   row.querySelector('.s-endP')?.value     ?? 'မနက်',
+      }));
+
+      const timeParts = sessions.map(s =>
+        `[${s.shop}] ${s.startP} ${s.startH}:00 - ${s.endP} ${s.endH}:00`
+      );
+      lines.push(`(${date})${dayMy}- ${timeParts.join(' / ')}`);
+      tableRows.push({ date, day: dayMy, isOff: false, sessions });
     }
   }
 
@@ -753,13 +963,18 @@ function generateSchedule() {
   tbody.innerHTML = '';
   tableRows.forEach(r => {
     const tr = document.createElement('tr');
+    const sessionCell = r.isOff
+      ? `<span class="status-off">ပိတ်</span>`
+      : `<div class="status-session">${r.sessions.map(s=>
+          `<span class="session-chip">
+            <span class="session-shop-tag">${s.shop}</span>
+            ${s.startP} ${s.startH}:00 → ${s.endP} ${s.endH}:00
+          </span>`).join('')}
+        </div>`;
     tr.innerHTML = `
       <td style="color:var(--accent);font-weight:500;">${r.date}</td>
       <td style="font-family:'Noto Sans Myanmar',sans-serif;">${r.day}</td>
-      <td>${r.isOff
-        ? `<span class="status-off">ပိတ်</span>`
-        : `<span class="status-work">${r.status}</span>`
-      }</td>
+      <td>${sessionCell}</td>
     `;
     tbody.appendChild(tr);
   });
@@ -769,7 +984,7 @@ function generateSchedule() {
   card.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-// ── Copy output ───────────────────────────────────────────────
+// ── Copy ──────────────────────────────────────────────────────
 function copySchedule() {
   const text = document.getElementById('outputText').textContent;
   navigator.clipboard.writeText(text).then(() => {
@@ -785,7 +1000,7 @@ function copySchedule() {
 (function init() {
   const saved = loadState();
 
-  // Inject save toast
+  // Save toast
   const toast = document.createElement('div');
   toast.id = 'saveToast';
   toast.textContent = '✦ Saved';
@@ -798,16 +1013,15 @@ function copySchedule() {
     transition:opacity 0.3s, transform 0.3s; pointer-events:none;
   `;
   document.body.appendChild(toast);
-  // CSS class for show state
   const style = document.createElement('style');
   style.textContent = `#saveToast.show { opacity:1 !important; transform:translateY(0) !important; }`;
   document.head.appendChild(style);
 
-  // Inject reset button below generate btn
-  const genBtn = document.querySelector('.generate-btn');
+  // Reset button
+  const genBtn   = document.querySelector('.generate-btn');
   const resetBtn = document.createElement('button');
   resetBtn.textContent = '↺ Reset to Defaults';
-  resetBtn.onclick = clearSavedData;
+  resetBtn.onclick     = clearSavedData;
   resetBtn.style.cssText = `
     width:100%; padding:10px; margin-top:10px;
     background:transparent; border:1px solid var(--border);
@@ -821,12 +1035,11 @@ function copySchedule() {
   genBtn.insertAdjacentElement('afterend', resetBtn);
 
   // Build UI
+  buildStartDate(saved);
   buildRows(saved);
-  addStartDateField(saved);
   restoreMeta(saved);
   attachMetaListeners();
 
-  // Show restore indicator if data was loaded
   if (saved) {
     setTimeout(() => {
       const t = document.getElementById('saveToast');

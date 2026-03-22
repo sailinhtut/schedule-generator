@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="my">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Shift Schedule Generator</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;500;700&family=Sawarabi+Mincho&family=DM+Mono:wght@300;400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--bg: #0d0f14;
+				--surface: #161921;
+				--surface2: #1e2330;
+				--border: #2a3040;
+				--accent: #f5a623;
+				--accent2: #e8672a;
+				--text: #e8eaf0;
+				--text-muted: #7a8299;
+				--success: #4caf84;
+				--danger: #e05c6a;
+				--card-glow: rgba(245, 166, 35, 0.08);
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				background: var(--bg);
+				color: var(--text);
+				font-family: 'DM Mono', 'Noto Sans Myanmar', monospace;
+				min-height: 100vh;
+				overflow-x: hidden;
+			}
+
+			/* Background texture */
+			body::before {
+				content: '';
+				position: fixed;
+				inset: 0;
+				background:
+					radial-gradient(
+						ellipse 60% 40% at 20% 20%,
+						rgba(245, 166, 35, 0.06) 0%,
+						transparent 60%
+					),
+					radial-gradient(
+						ellipse 50% 50% at 80% 80%,
+						rgba(232, 103, 42, 0.05) 0%,
+						transparent 60%
+					);
+				pointer-events: none;
+				z-index: 0;
+			}
+
+			.container {
+				position: relative;
+				z-index: 1;
+				max-width: 900px;
+				margin: 0 auto;
+				padding: 40px 20px 60px;
+			}
+
+			/* Header */
+			.header {
+				text-align: center;
+				margin-bottom: 48px;
+				animation: fadeDown 0.7s ease both;
+			}
+
+			.header-badge {
+				display: inline-block;
+				font-size: 11px;
+				letter-spacing: 3px;
+				text-transform: uppercase;
+				color: var(--accent);
+				border: 1px solid rgba(245, 166, 35, 0.3);
+				padding: 5px 16px;
+				border-radius: 20px;
+				margin-bottom: 18px;
+				background: rgba(245, 166, 35, 0.06);
+			}
+
+			.header h1 {
+				font-family: 'Sawarabi Mincho', serif;
+				font-size: clamp(28px, 5vw, 42px);
+				font-weight: 400;
+				letter-spacing: 2px;
+				background: linear-gradient(135deg, #f5a623, #e8672a, #f5a623);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+				margin-bottom: 10px;
+			}
+
+			.header-myanmar {
+				font-family: 'Noto Sans Myanmar', sans-serif;
+				font-size: 16px;
+				color: var(--text-muted);
+				letter-spacing: 1px;
+			}
+
+			/* Builder card */
+			.builder-card {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 16px;
+				padding: 36px;
+				margin-bottom: 28px;
+				animation: fadeUp 0.7s 0.1s ease both;
+				box-shadow: 0 0 60px var(--card-glow);
+			}
+
+			.section-label {
+				font-size: 10px;
+				letter-spacing: 3px;
+				text-transform: uppercase;
+				color: var(--accent);
+				margin-bottom: 24px;
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.section-label::after {
+				content: '';
+				flex: 1;
+				height: 1px;
+				background: linear-gradient(to right, var(--border), transparent);
+			}
+
+			/* Grid layouts */
+			.grid-2 {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 20px;
+			}
+			.grid-3 {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 16px;
+			}
+
+			@media (max-width: 600px) {
+				.grid-2 {
+					grid-template-columns: 1fr;
+				}
+				.grid-3 {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+
+			/* Form fields */
+			.field {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+			}
+
+			.field label {
+				font-size: 11px;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				color: var(--text-muted);
+			}
+
+			.field select,
+			.field input {
+				background: var(--surface2);
+				border: 1px solid var(--border);
+				color: var(--text);
+				padding: 12px 16px;
+				border-radius: 8px;
+				font-family: inherit;
+				font-size: 14px;
+				outline: none;
+				cursor: pointer;
+				transition: all 0.2s;
+				appearance: none;
+				-webkit-appearance: none;
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8299' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+				background-repeat: no-repeat;
+				background-position: right 14px center;
+			}
+
+			.field select:hover,
+			.field select:focus,
+			.field input:hover,
+			.field input:focus {
+				border-color: rgba(245, 166, 35, 0.5);
+				background-color: #232838;
+			}
+
+			/* Day + time row */
+			.schedule-row {
+				background: var(--surface2);
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				padding: 16px 20px;
+				margin-bottom: 10px;
+				display: grid;
+				grid-template-columns: 90px 1fr 1fr auto;
+				align-items: center;
+				gap: 16px;
+				transition: all 0.2s;
+			}
+
+			.schedule-row:hover {
+				border-color: rgba(245, 166, 35, 0.25);
+			}
+
+			.day-badge {
+				background: rgba(245, 166, 35, 0.1);
+				border: 1px solid rgba(245, 166, 35, 0.2);
+				color: var(--accent);
+				font-size: 12px;
+				padding: 4px 10px;
+				border-radius: 6px;
+				text-align: center;
+				font-family: 'Noto Sans Myanmar', sans-serif;
+				white-space: nowrap;
+			}
+
+			.time-group {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+
+			.time-select-wrap {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				flex: 1;
+			}
+
+			.mini-select {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				color: var(--text);
+				padding: 8px 10px;
+				border-radius: 6px;
+				font-family: inherit;
+				font-size: 13px;
+				outline: none;
+				cursor: pointer;
+				transition: all 0.2s;
+				appearance: none;
+				-webkit-appearance: none;
+				min-width: 52px;
+				text-align: center;
+			}
+
+			.mini-select:focus {
+				border-color: rgba(245, 166, 35, 0.5);
+			}
+
+			.period-select {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				color: var(--text);
+				padding: 8px 10px;
+				border-radius: 6px;
+				font-family: 'Noto Sans Myanmar', sans-serif;
+				font-size: 12px;
+				outline: none;
+				cursor: pointer;
+				transition: all 0.2s;
+				appearance: none;
+				-webkit-appearance: none;
+				min-width: 80px;
+			}
+
+			.period-select:focus {
+				border-color: rgba(245, 166, 35, 0.5);
+			}
+
+			.time-separator {
+				color: var(--text-muted);
+				font-size: 12px;
+			}
+
+			/* Off toggle */
+			.off-toggle {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				cursor: pointer;
+			}
+
+			.off-toggle input[type='checkbox'] {
+				display: none;
+			}
+
+			.toggle-btn {
+				width: 44px;
+				height: 24px;
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				position: relative;
+				transition: all 0.25s;
+				cursor: pointer;
+				flex-shrink: 0;
+			}
+
+			.toggle-btn::after {
+				content: '';
+				position: absolute;
+				width: 18px;
+				height: 18px;
+				background: var(--text-muted);
+				border-radius: 50%;
+				top: 2px;
+				left: 2px;
+				transition: all 0.25s;
+			}
+
+			.off-toggle input:checked + .toggle-btn {
+				background: rgba(224, 92, 106, 0.2);
+				border-color: var(--danger);
+			}
+
+			.off-toggle input:checked + .toggle-btn::after {
+				transform: translateX(20px);
+				background: var(--danger);
+			}
+
+			.off-label {
+				font-size: 11px;
+				color: var(--text-muted);
+				letter-spacing: 1px;
+				text-transform: uppercase;
+			}
+
+			.schedule-row.is-off {
+				opacity: 0.5;
+			}
+
+			.schedule-row.is-off .time-group {
+				pointer-events: none;
+				opacity: 0.4;
+			}
+
+			/* Generate button */
+			.generate-btn {
+				width: 100%;
+				padding: 16px;
+				background: linear-gradient(135deg, #f5a623, #e8672a);
+				color: #fff;
+				border: none;
+				border-radius: 10px;
+				font-family: 'DM Mono', monospace;
+				font-size: 14px;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition: all 0.2s;
+				margin-top: 28px;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.generate-btn::before {
+				content: '';
+				position: absolute;
+				inset: 0;
+				background: rgba(255, 255, 255, 0.1);
+				transform: translateX(-100%);
+				transition: transform 0.3s;
+			}
+
+			.generate-btn:hover::before {
+				transform: translateX(0);
+			}
+			.generate-btn:hover {
+				transform: translateY(-1px);
+				box-shadow: 0 8px 30px rgba(245, 166, 35, 0.3);
+			}
+			.generate-btn:active {
+				transform: translateY(0);
+			}
+
+			/* Output card */
+			.output-card {
+				background: var(--surface);
+				border: 1px solid var(--border);
+				border-radius: 16px;
+				overflow: hidden;
+				display: none;
+				animation: fadeUp 0.5s ease both;
+				box-shadow: 0 0 60px var(--card-glow);
+			}
+
+			.output-card.visible {
+				display: block;
+			}
+
+			.output-header {
+				background: linear-gradient(
+					135deg,
+					rgba(245, 166, 35, 0.12),
+					rgba(232, 103, 42, 0.08)
+				);
+				border-bottom: 1px solid var(--border);
+				padding: 20px 28px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+			}
+
+			.output-title {
+				font-size: 12px;
+				letter-spacing: 3px;
+				text-transform: uppercase;
+				color: var(--accent);
+			}
+
+			.copy-btn {
+				background: rgba(245, 166, 35, 0.1);
+				border: 1px solid rgba(245, 166, 35, 0.3);
+				color: var(--accent);
+				padding: 8px 18px;
+				border-radius: 6px;
+				font-family: inherit;
+				font-size: 11px;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition: all 0.2s;
+			}
+
+			.copy-btn:hover {
+				background: rgba(245, 166, 35, 0.2);
+			}
+
+			.output-content {
+				padding: 32px 28px;
+			}
+
+			.output-text {
+				font-family: 'Noto Sans Myanmar', sans-serif;
+				font-size: 15px;
+				line-height: 2;
+				color: var(--text);
+				white-space: pre-wrap;
+				background: var(--surface2);
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				padding: 24px;
+				min-height: 120px;
+				letter-spacing: 0.5px;
+			}
+
+			/* Preview table */
+			.preview-table {
+				width: 100%;
+				border-collapse: collapse;
+				margin-top: 24px;
+				font-family: 'Noto Sans Myanmar', sans-serif;
+				font-size: 14px;
+			}
+
+			.preview-table th {
+				background: rgba(245, 166, 35, 0.08);
+				color: var(--accent);
+				font-size: 10px;
+				letter-spacing: 2px;
+				text-transform: uppercase;
+				font-family: 'DM Mono', monospace;
+				padding: 12px 16px;
+				text-align: left;
+				border-bottom: 1px solid var(--border);
+			}
+
+			.preview-table td {
+				padding: 12px 16px;
+				border-bottom: 1px solid rgba(42, 48, 64, 0.6);
+				vertical-align: middle;
+			}
+
+			.preview-table tr:last-child td {
+				border-bottom: none;
+			}
+			.preview-table tr:hover td {
+				background: rgba(245, 166, 35, 0.03);
+			}
+
+			.status-off {
+				color: var(--danger);
+				font-size: 12px;
+				background: rgba(224, 92, 106, 0.1);
+				padding: 3px 10px;
+				border-radius: 4px;
+				border: 1px solid rgba(224, 92, 106, 0.2);
+				display: inline-block;
+			}
+
+			.status-work {
+				color: var(--success);
+				font-size: 12px;
+			}
+
+			/* Animations */
+			@keyframes fadeDown {
+				from {
+					opacity: 0;
+					transform: translateY(-20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			@keyframes fadeUp {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			@media (max-width: 600px) {
+				.schedule-row {
+					grid-template-columns: 1fr;
+					gap: 12px;
+				}
+				.builder-card {
+					padding: 20px;
+				}
+				.output-content {
+					padding: 20px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header">
+				<div class="header-badge">Shift Schedule Generator</div>
+				<h1>WORK SCHEDULE</h1>
+				<div class="header-myanmar">အလုပ်ချိန်ဇယားပြုလုပ်ရာနေရာ</div>
+			</div>
+
+			<!-- Builder -->
+			<div class="builder-card">
+				<div class="section-label">Basic Info · အခြေခံအချက်အလက်</div>
+
+				<div class="grid-2" style="margin-bottom: 28px">
+					<div class="field">
+						<label>Shop · ဆိုင်</label>
+						<select id="shopSelect">
+							<option value="Kashihara">Kashihara (橿原)</option>
+							<option value="Sakurai">Sakurai (桜井)</option>
+							<option value="Kashihara / Sakurai">Kashihara / Sakurai</option>
+						</select>
+					</div>
+					<div class="field">
+						<label>Month · လ</label>
+						<select id="monthSelect">
+							<option value="">— မရွေးချယ်ရသေးပါ —</option>
+							<option value="ဇန်နဝါရီ">ဇန်နဝါရီ (January)</option>
+							<option value="ဖေဖော်ဝါရီ">ဖေဖော်ဝါရီ (February)</option>
+							<option value="မတ်">မတ် (March)</option>
+							<option value="ဧပြီ">ဧပြီ (April)</option>
+							<option value="မေ">မေ (May)</option>
+							<option value="ဇွန်">ဇွန် (June)</option>
+							<option value="ဇူလိုင်">ဇူလိုင် (July)</option>
+							<option value="သြဂုတ်">သြဂုတ် (August)</option>
+							<option value="စက်တင်ဘာ">စက်တင်ဘာ (September)</option>
+							<option value="အောက်တိုဘာ">အောက်တိုဘာ (October)</option>
+							<option value="နိုဝင်ဘာ">နိုဝင်ဘာ (November)</option>
+							<option value="ဒီဇင်ဘာ">ဒီဇင်ဘာ (December)</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="section-label">Weekly Schedule · အပတ်စဉ်အချိန်ဇယား</div>
+
+				<div id="scheduleRows"></div>
+
+				<button class="generate-btn" onclick="generateSchedule()">
+					✦ Generate Schedule · ဇယားပြုလုပ်ပါ
+				</button>
+			</div>
+
+			<!-- Output -->
+			<div class="output-card" id="outputCard">
+				<div class="output-header">
+					<div class="output-title">Generated Schedule · ထွက်ပေါ်သောဇယား</div>
+					<button class="copy-btn" onclick="copySchedule()">Copy Text</button>
+				</div>
+				<div class="output-content">
+					<div class="output-text" id="outputText"></div>
+					<table class="preview-table" id="previewTable">
+						<thead>
+							<tr>
+								<th>Date</th>
+								<th>Day · နေ့</th>
+								<th>Status · အချိန်</th>
+							</tr>
+						</thead>
+						<tbody id="previewBody"></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			const DAYS_MY = [
+				'တနင်္လာ',
+				'အင်္ဂါ',
+				'ဗုဒ္ဓဟူး',
+				'ကြာသပတေး',
+				'သောကြာ',
+				'စနေ',
+				'တနင်္ဂနွေ',
+			];
+			const PERIODS = ['မနက်', 'နေ့လည်', 'ညနေ', 'ည'];
+			const HOURS = Array.from({ length: 12 }, (_, i) => String(i + 1));
+			const LS_KEY = 'burmese_schedule_v1';
+
+			// ── Hardcoded defaults (used only when localStorage is empty) ──
+			const DEFAULT_SCHEDULE = [
+				{ off: false, startH: '6', startP: 'ညနေ', endH: '3', endP: 'မနက်' },
+				{ off: true, startH: '5', startP: 'ညနေ', endH: '3', endP: 'မနက်' },
+				{ off: false, startH: '5', startP: 'ညနေ', endH: '3', endP: 'မနက်' },
+				{ off: false, startH: '5', startP: 'ညနေ', endH: '3', endP: 'မနက်' },
+				{ off: true, startH: '5', startP: 'ညနေ', endH: '3', endP: 'မနက်' },
+				{ off: false, startH: '6', startP: 'ညနေ', endH: '3', endP: 'မနက်' },
+				{ off: false, startH: '6', startP: 'ညနေ', endH: '3', endP: 'မနက်' },
+			];
+			const DEFAULT_META = {
+				shop: 'Kashihara / Sakurai',
+				month: '',
+				startDate: '9',
+				weekNote: 'ဒီအပတ်',
+			};
+
+			// ── LocalStorage helpers ──────────────────────────────────────
+			function loadState() {
+				try {
+					const raw = localStorage.getItem(LS_KEY);
+					return raw ? JSON.parse(raw) : null;
+				} catch (e) {
+					return null;
+				}
+			}
+
+			function saveState() {
+				try {
+					const state = {
+						meta: {
+							shop:
+								document.getElementById('shopSelect')?.value ??
+								DEFAULT_META.shop,
+							month:
+								document.getElementById('monthSelect')?.value ??
+								DEFAULT_META.month,
+							startDate:
+								document.getElementById('startDateInput')?.value ??
+								DEFAULT_META.startDate,
+							weekNote:
+								document.getElementById('weekNote')?.value ??
+								DEFAULT_META.weekNote,
+						},
+						days: DAYS_MY.map((_, i) => ({
+							off: document.getElementById(`off-${i}`)?.checked ?? false,
+							startH: document.getElementById(`startH-${i}`)?.value ?? '6',
+							startP: document.getElementById(`startP-${i}`)?.value ?? 'ညနေ',
+							endH: document.getElementById(`endH-${i}`)?.value ?? '3',
+							endP: document.getElementById(`endP-${i}`)?.value ?? 'မနက်',
+						})),
+					};
+					localStorage.setItem(LS_KEY, JSON.stringify(state));
+					flashSaveIndicator();
+				} catch (e) {}
+			}
+
+			// ── Save indicator (subtle toast) ────────────────────────────
+			function flashSaveIndicator() {
+				let el = document.getElementById('saveToast');
+				if (!el) return;
+				el.classList.add('show');
+				clearTimeout(el._t);
+				el._t = setTimeout(() => el.classList.remove('show'), 1800);
+			}
+
+			// ── Build schedule rows from saved or default data ───────────
+			function buildRows(saved) {
+				const container = document.getElementById('scheduleRows');
+				container.innerHTML = '';
+
+				DAYS_MY.forEach((day, i) => {
+					const def = saved?.days?.[i] ?? DEFAULT_SCHEDULE[i];
+					const row = document.createElement('div');
+					row.className = 'schedule-row' + (def.off ? ' is-off' : '');
+					row.id = `row-${i}`;
+
+					row.innerHTML = `
+      <div class="day-badge">${day}</div>
+
+      <div class="time-group">
+        <div class="time-select-wrap">
+          <select class="mini-select" id="startH-${i}" onchange="saveState()">
+            ${HOURS.map((h) => `<option value="${h}"${h === def.startH ? ' selected' : ''}>${h}</option>`).join('')}
+          </select>
+          <span style="color:var(--text-muted);font-size:11px;">:</span>
+          <select class="period-select" id="startP-${i}" onchange="saveState()">
+            ${PERIODS.map((p) => `<option value="${p}"${p === def.startP ? ' selected' : ''}>${p}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="time-group">
+        <span class="time-separator">→</span>
+        <div class="time-select-wrap">
+          <select class="mini-select" id="endH-${i}" onchange="saveState()">
+            ${HOURS.map((h) => `<option value="${h}"${h === def.endH ? ' selected' : ''}>${h}</option>`).join('')}
+          </select>
+          <span style="color:var(--text-muted);font-size:11px;">:</span>
+          <select class="period-select" id="endP-${i}" onchange="saveState()">
+            ${PERIODS.map((p) => `<option value="${p}"${p === def.endP ? ' selected' : ''}>${p}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <label class="off-toggle">
+        <input type="checkbox" id="off-${i}" ${def.off ? 'checked' : ''} onchange="toggleOff(${i}); saveState();">
+        <div class="toggle-btn"></div>
+        <span class="off-label">ပိတ်</span>
+      </label>
+    `;
+					container.appendChild(row);
+				});
+			}
+
+			// ── Build the extra meta row (start date + week) ─────────────
+			function addStartDateField(saved) {
+				const basicInfo = document.querySelector('.grid-2');
+				const extraRow = document.createElement('div');
+				extraRow.className = 'grid-2';
+				extraRow.style.marginBottom = '28px';
+
+				const savedStart = saved?.meta?.startDate ?? DEFAULT_META.startDate;
+				const savedWeek = saved?.meta?.weekNote ?? DEFAULT_META.weekNote;
+
+				extraRow.innerHTML = `
+    <div class="field">
+      <label>Start Date · စတင်သည့်ရက်</label>
+      <select id="startDateInput" onchange="saveState()">
+        ${Array.from({ length: 31 }, (_, i) => `<option value="${i + 1}"${String(i + 1) === String(savedStart) ? ' selected' : ''}>${i + 1}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field">
+      <label>Week · အပတ်</label>
+      <select id="weekNote" onchange="saveState()">
+        ${['ဒီအပတ်', 'နောက်အပတ်', 'ဒုတိယအပတ်', 'တတိယအပတ်']
+			.map(
+				(w) =>
+					`<option value="${w}"${w === savedWeek ? ' selected' : ''}>${w}</option>`,
+			)
+			.join('')}
+      </select>
+    </div>
+  `;
+				basicInfo.insertAdjacentElement('afterend', extraRow);
+			}
+
+			// ── Restore top-level selects ─────────────────────────────────
+			function restoreMeta(saved) {
+				if (!saved?.meta) return;
+				const shop = document.getElementById('shopSelect');
+				const month = document.getElementById('monthSelect');
+				if (shop && saved.meta.shop) shop.value = saved.meta.shop;
+				if (month && saved.meta.month) month.value = saved.meta.month;
+			}
+
+			// ── Attach save listeners to top-level selects ───────────────
+			function attachMetaListeners() {
+				['shopSelect', 'monthSelect'].forEach((id) => {
+					const el = document.getElementById(id);
+					if (el) el.addEventListener('change', saveState);
+				});
+			}
+
+			// ── Off-day toggle ────────────────────────────────────────────
+			function toggleOff(i) {
+				const cb = document.getElementById(`off-${i}`);
+				const row = document.getElementById(`row-${i}`);
+				row.classList.toggle('is-off', cb.checked);
+			}
+
+			// ── Clear saved data ──────────────────────────────────────────
+			function clearSavedData() {
+				if (!confirm('Clear all saved data and reset to defaults?')) return;
+				localStorage.removeItem(LS_KEY);
+				location.reload();
+			}
+
+			// ── Generate schedule output ──────────────────────────────────
+			function generateSchedule() {
+				const shop = document.getElementById('shopSelect').value;
+				const month = document.getElementById('monthSelect').value;
+				const startDate = parseInt(
+					document.getElementById('startDateInput')?.value || '9',
+				);
+
+				const lines = [];
+				const tableRows = [];
+
+				lines.push(shop);
+				if (month) {
+					const startDate = parseInt(
+						document.getElementById('startDateInput')?.value || '1',
+					);
+					const endDate = startDate + 6;
+					lines.push(`${month} ${startDate} to ${endDate} - 2025 အချိန်ဇယား`);
+				}
+				lines.push('');
+
+				for (let i = 0; i < 7; i++) {
+					const date = startDate + i;
+					const dayMy = DAYS_MY[i];
+					const isOff = document.getElementById(`off-${i}`).checked;
+
+					if (isOff) {
+						lines.push(`(${date})${dayMy}- ပိတ်`);
+						tableRows.push({ date, day: dayMy, status: 'ပိတ်', isOff: true });
+					} else {
+						const startH = document.getElementById(`startH-${i}`).value;
+						const startP = document.getElementById(`startP-${i}`).value;
+						const endH = document.getElementById(`endH-${i}`).value;
+						const endP = document.getElementById(`endP-${i}`).value;
+						const timeStr = `${startP} ${startH}:00 - ${endP} ${endH}:00`;
+						lines.push(`(${date})${dayMy}- ${timeStr}`);
+						tableRows.push({ date, day: dayMy, status: timeStr, isOff: false });
+					}
+				}
+
+				document.getElementById('outputText').textContent = lines.join('\n');
+
+				const tbody = document.getElementById('previewBody');
+				tbody.innerHTML = '';
+				tableRows.forEach((r) => {
+					const tr = document.createElement('tr');
+					tr.innerHTML = `
+      <td style="color:var(--accent);font-weight:500;">${r.date}</td>
+      <td style="font-family:'Noto Sans Myanmar',sans-serif;">${r.day}</td>
+      <td>${
+			r.isOff
+				? `<span class="status-off">ပိတ်</span>`
+				: `<span class="status-work">${r.status}</span>`
+		}</td>
+    `;
+					tbody.appendChild(tr);
+				});
+
+				const card = document.getElementById('outputCard');
+				card.classList.add('visible');
+				card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			}
+
+			// ── Copy output ───────────────────────────────────────────────
+			function copySchedule() {
+				const text = document.getElementById('outputText').textContent;
+				navigator.clipboard.writeText(text).then(() => {
+					const btn = document.querySelector('.copy-btn');
+					const orig = btn.textContent;
+					btn.textContent = 'Copied ✓';
+					btn.style.cssText +=
+						';background:rgba(76,175,132,0.15);border-color:rgba(76,175,132,0.4);color:var(--success)';
+					setTimeout(() => {
+						btn.textContent = orig;
+						btn.style.cssText = '';
+					}, 2000);
+				});
+			}
+
+			// ── Init ──────────────────────────────────────────────────────
+			(function init() {
+				const saved = loadState();
+
+				// Inject save toast
+				const toast = document.createElement('div');
+				toast.id = 'saveToast';
+				toast.textContent = '✦ Saved';
+				toast.style.cssText = `
+    position:fixed; bottom:24px; right:24px; z-index:999;
+    background:rgba(76,175,132,0.15); border:1px solid rgba(76,175,132,0.35);
+    color:#4caf84; font-family:'DM Mono',monospace; font-size:11px;
+    letter-spacing:2px; padding:8px 18px; border-radius:8px;
+    opacity:0; transform:translateY(8px);
+    transition:opacity 0.3s, transform 0.3s; pointer-events:none;
+  `;
+				document.body.appendChild(toast);
+				// CSS class for show state
+				const style = document.createElement('style');
+				style.textContent = `#saveToast.show { opacity:1 !important; transform:translateY(0) !important; }`;
+				document.head.appendChild(style);
+
+				// Inject reset button below generate btn
+				const genBtn = document.querySelector('.generate-btn');
+				const resetBtn = document.createElement('button');
+				resetBtn.textContent = '↺ Reset to Defaults';
+				resetBtn.onclick = clearSavedData;
+				resetBtn.style.cssText = `
+    width:100%; padding:10px; margin-top:10px;
+    background:transparent; border:1px solid var(--border);
+    color:var(--text-muted); border-radius:8px;
+    font-family:'DM Mono',monospace; font-size:12px;
+    letter-spacing:2px; text-transform:uppercase;
+    cursor:pointer; transition:all 0.2s;
+  `;
+				resetBtn.onmouseenter = () => {
+					resetBtn.style.borderColor = 'rgba(224,92,106,0.4)';
+					resetBtn.style.color = 'var(--danger)';
+				};
+				resetBtn.onmouseleave = () => {
+					resetBtn.style.borderColor = 'var(--border)';
+					resetBtn.style.color = 'var(--text-muted)';
+				};
+				genBtn.insertAdjacentElement('afterend', resetBtn);
+
+				// Build UI
+				buildRows(saved);
+				addStartDateField(saved);
+				restoreMeta(saved);
+				attachMetaListeners();
+
+				// Show restore indicator if data was loaded
+				if (saved) {
+					setTimeout(() => {
+						const t = document.getElementById('saveToast');
+						t.textContent = '↺ Restored';
+						t.classList.add('show');
+						setTimeout(() => {
+							t.classList.remove('show');
+							setTimeout(() => {
+								t.textContent = '✦ Saved';
+							}, 400);
+						}, 2000);
+					}, 600);
+				}
+			})();
+		</script>
+	</body>
+</html>

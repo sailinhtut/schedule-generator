@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shift Schedule Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;500;700&family=Sawarabi+Mincho&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161921;
+    --surface2: #1e2330;
+    --border: #2a3040;
+    --accent: #f5a623;
+    --accent2: #e8672a;
+    --text: #e8eaf0;
+    --text-muted: #7a8299;
+    --success: #4caf84;
+    --danger: #e05c6a;
+    --card-glow: rgba(245, 166, 35, 0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', 'Noto Sans Myanmar', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 20%, rgba(245,166,35,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(232,103,42,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid rgba(245,166,35,0.3);
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+    background: rgba(245,166,35,0.06);
+  }
+
+  .header h1 {
+    font-family: 'Sawarabi Mincho', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-weight: 400;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, #f5a623, #e8672a, #f5a623);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+
+  .header-myanmar {
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    font-size: 16px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* Builder card */
+  .builder-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 28px;
+    animation: fadeUp 0.7s 0.1s ease both;
+    box-shadow: 0 0 60px var(--card-glow);
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 600px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .field select, .field input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8299' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+  }
+
+  .field select:hover, .field select:focus,
+  .field input:hover, .field input:focus {
+    border-color: rgba(245,166,35,0.5);
+    background-color: #232838;
+  }
+
+  /* ── Day block ── */
+  .day-block {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .day-block:hover { border-color: rgba(245,166,35,0.25); }
+
+  .day-block.is-off { opacity: 0.5; }
+  .day-block.is-off .sessions-wrapper { pointer-events: none; opacity: 0.35; }
+
+  /* Day header row */
+  .day-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(245,166,35,0.04);
+  }
+
+  .day-header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .day-badge {
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.2);
+    color: var(--accent);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    white-space: nowrap;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  /* Off toggle */
+  .off-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .off-toggle input[type="checkbox"] { display: none; }
+
+  .toggle-btn {
+    width: 44px;
+    height: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    position: relative;
+    transition: all 0.25s;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .toggle-btn::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: all 0.25s;
+  }
+
+  .off-toggle input:checked + .toggle-btn {
+    background: rgba(224,92,106,0.2);
+    border-color: var(--danger);
+  }
+
+  .off-toggle input:checked + .toggle-btn::after {
+    transform: translateX(20px);
+    background: var(--danger);
+  }
+
+  .off-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    font-family: 'Noto Sans Myanmar', sans-serif;
+  }
+
+  /* Add session button */
+  .add-session-btn {
+    background: transparent;
+    border: 1px dashed rgba(245,166,35,0.35);
+    color: var(--accent);
+    padding: 5px 14px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .add-session-btn:hover {
+    background: rgba(245,166,35,0.08);
+    border-color: rgba(245,166,35,0.6);
+  }
+
+  /* Sessions wrapper */
+  .sessions-wrapper {
+    padding: 14px 18px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  /* Single session row */
+  .session-row {
+    display: grid;
+    grid-template-columns: 140px 1fr 1fr auto;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    animation: fadeUp 0.25s ease both;
+    position: relative;
+  }
+
+  .session-row:hover { border-color: rgba(245,166,35,0.2); }
+
+  /* Session number badge */
+  .session-num {
+    position: absolute;
+    top: -8px;
+    left: 12px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 7px;
+    text-transform: uppercase;
+  }
+
+  /* Shop mini-select */
+  .shop-select {
+    background: var(--surface2);
+    border: 1px solid rgba(245,166,35,0.25);
+    color: var(--accent);
+    padding: 7px 10px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23f5a623' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 9px center;
+    padding-right: 26px;
+  }
+
+  .shop-select:focus { border-color: rgba(245,166,35,0.6); }
+
+  /* Time row within session */
+  .time-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .time-select-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .mini-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 48px;
+    text-align: center;
+  }
+
+  .mini-select:focus { border-color: rgba(245,166,35,0.5); }
+
+  .period-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 8px;
+    border-radius: 6px;
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    font-size: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 78px;
+  }
+
+  .period-select:focus { border-color: rgba(245,166,35,0.5); }
+
+  .time-separator {
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 0 2px;
+  }
+
+  /* Remove session button */
+  .remove-session-btn {
+    background: transparent;
+    border: 1px solid rgba(224,92,106,0.25);
+    color: rgba(224,92,106,0.6);
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .remove-session-btn:hover {
+    background: rgba(224,92,106,0.12);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* Generate button */
+  .generate-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #f5a623, #e8672a);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .generate-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s;
+  }
+
+  .generate-btn:hover::before { transform: translateX(0); }
+  .generate-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(245,166,35,0.3); }
+  .generate-btn:active { transform: translateY(0); }
+
+  /* Output card */
+  .output-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    display: none;
+    animation: fadeUp 0.5s ease both;
+    box-shadow: 0 0 60px var(--card-glow);
+  }
+
+  .output-card.visible { display: block; }
+
+  .output-header {
+    background: linear-gradient(135deg, rgba(245,166,35,0.12), rgba(232,103,42,0.08));
+    border-bottom: 1px solid var(--border);
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .output-title {
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .copy-btn {
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.3);
+    color: var(--accent);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { background: rgba(245,166,35,0.2); }
+
+  .output-content { padding: 32px 28px; }
+
+  .output-text {
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    font-size: 15px;
+    line-height: 2;
+    color: var(--text);
+    white-space: pre-wrap;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    min-height: 120px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Preview table */
+  .preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-family: 'Noto Sans Myanmar', sans-serif;
+    font-size: 14px;
+  }
+
+  .preview-table th {
+    background: rgba(245,166,35,0.08);
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .preview-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(42,48,64,0.6);
+    vertical-align: top;
+  }
+
+  .preview-table tr:last-child td { border-bottom: none; }
+  .preview-table tr:hover td { background: rgba(245,166,35,0.03); }
+
+  .status-off {
+    color: var(--danger);
+    font-size: 12px;
+    background: rgba(224,92,106,0.1);
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 1px solid rgba(224,92,106,0.2);
+    display: inline-block;
+  }
+
+  .status-session {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .session-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--success);
+    background: rgba(76,175,132,0.07);
+    border: 1px solid rgba(76,175,132,0.2);
+    border-radius: 5px;
+    padding: 3px 10px;
+  }
+
+  .session-shop-tag {
+    font-size: 10px;
+    color: var(--accent);
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.25);
+    border-radius: 4px;
+    padding: 1px 7px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 680px) {
+    .session-row {
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .builder-card { padding: 20px; }
+    .output-content { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-badge">Shift Schedule Generator</div>
+    <h1>WORK SCHEDULE</h1>
+    <div class="header-myanmar">အလုပ်ချိန်ဇယားပြုလုပ်ရာနေရာ</div>
+  </div>
+
+  <!-- Builder -->
+  <div class="builder-card">
+    <div class="section-label">Basic Info · အခြေခံအချက်အလက်</div>
+
+    <div class="grid-2" style="margin-bottom:28px;">
+      <div class="field">
+        <label>Month · လ</label>
+        <select id="monthSelect">
+          <option value="">— မရွေးချယ်ရသေးပါ —</option>
+          <option value="ဇန်နဝါရီ">ဇန်နဝါရီ (January)</option>
+          <option value="ဖေဖော်ဝါရီ">ဖေဖော်ဝါရီ (February)</option>
+          <option value="မတ်">မတ် (March)</option>
+          <option value="ဧပြီ">ဧပြီ (April)</option>
+          <option value="မေ">မေ (May)</option>
+          <option value="ဇွန်">ဇွန် (June)</option>
+          <option value="ဇူလိုင်">ဇူလိုင် (July)</option>
+          <option value="သြဂုတ်">သြဂုတ် (August)</option>
+          <option value="စက်တင်ဘာ">စက်တင်ဘာ (September)</option>
+          <option value="အောက်တိုဘာ">အောက်တိုဘာ (October)</option>
+          <option value="နိုဝင်ဘာ">နိုဝင်ဘာ (November)</option>
+          <option value="ဒီဇင်ဘာ">ဒီဇင်ဘာ (December)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Week · အပတ်</label>
+        <select id="weekNote">
+          <option value="ဒီအပတ်">ဒီအပတ်</option>
+          <option value="နောက်အပတ်">နောက်အပတ်</option>
+          <option value="ဒုတိယအပတ်">ဒုတိယအပတ်</option>
+          <option value="တတိယအပတ်">တတိယအပတ်</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:28px;" id="startDateRow">
+      <div class="field">
+        <label>Start Date · စတင်သည့်ရက်</label>
+        <select id="startDateInput">
+          <!-- filled by JS -->
+        </select>
+      </div>
+    </div>
+
+    <div class="section-label">Weekly Schedule · အပတ်စဉ်အချိန်ဇယား</div>
+
+    <div id="scheduleRows"></div>
+
+    <button class="generate-btn" onclick="generateSchedule()">
+      ✦ Generate Schedule · ဇယားပြုလုပ်ပါ
+    </button>
+  </div>
+
+  <!-- Output -->
+  <div class="output-card" id="outputCard">
+    <div class="output-header">
+      <div class="output-title">Generated Schedule · ထွက်ပေါ်သောဇယား</div>
+      <button class="copy-btn" onclick="copySchedule()">Copy Text</button>
+    </div>
+    <div class="output-content">
+      <div class="output-text" id="outputText"></div>
+      <table class="preview-table" id="previewTable">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Day · နေ့</th>
+            <th>Sessions · ရောက်ချိန်</th>
+          </tr>
+        </thead>
+        <tbody id="previewBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DAYS_MY  = ['တနင်္လာ','အင်္ဂါ','ဗုဒ္ဓဟူး','ကြာသပတေး','သောကြာ','စနေ','တနင်္ဂနွေ'];
+const PERIODS  = ['မနက်','နေ့လည်','ညနေ','ည'];
+const HOURS    = Array.from({length:12}, (_,i) => String(i+1));
+const SHOPS    = ['Kashihara','Sakurai','Kashihara / Sakurai'];
+const LS_KEY   = 'burmese_schedule_v2';
+
+// ── Defaults ──────────────────────────────────────────────────
+const DEFAULT_SESSION = { shop:'Kashihara', startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' };
+
+const DEFAULT_SCHEDULE = [
+  { off:false, sessions:[{ shop:'Kashihara',          startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:true,  sessions:[{ shop:'Kashihara',          startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Sakurai',            startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Kashihara',          startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:true,  sessions:[{ shop:'Kashihara',          startH:'5', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Kashihara / Sakurai',startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+  { off:false, sessions:[{ shop:'Sakurai',            startH:'6', startP:'ညနေ', endH:'3', endP:'မနက်' }] },
+];
+
+const DEFAULT_META = { month:'', startDate:'9', weekNote:'ဒီအပတ်' };
+
+// ── LocalStorage ──────────────────────────────────────────────
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
+function saveState() {
+  try {
+    const state = {
+      meta: {
+        month:     document.getElementById('monthSelect')?.value    ?? '',
+        startDate: document.getElementById('startDateInput')?.value ?? '9',
+        weekNote:  document.getElementById('weekNote')?.value       ?? 'ဒီအပတ်',
+      },
+      days: DAYS_MY.map((_,i) => {
+        const off = document.getElementById(`off-${i}`)?.checked ?? false;
+        const sessionEls = document.querySelectorAll(`.session-row[data-day="${i}"]`);
+        const sessions = Array.from(sessionEls).map(row => ({
+          shop:   row.querySelector('.shop-select')?.value   ?? 'Kashihara',
+          startH: row.querySelector('.s-startH')?.value      ?? '6',
+          startP: row.querySelector('.s-startP')?.value      ?? 'ညနေ',
+          endH:   row.querySelector('.s-endH')?.value        ?? '3',
+          endP:   row.querySelector('.s-endP')?.value        ?? 'မနက်',
+        }));
+        return { off, sessions: sessions.length ? sessions : [{ ...DEFAULT_SESSION }] };
+      })
+    };
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    flashSaveIndicator();
+  } catch(e) {}
+}
+
+// ── Save toast ────────────────────────────────────────────────
+function flashSaveIndicator() {
+  let el = document.getElementById('saveToast');
+  if (!el) return;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ── Shop options HTML ─────────────────────────────────────────
+function shopOptions(selected) {
+  return SHOPS.map(s => `<option value="${s}"${s===selected?' selected':''}>${s}</option>`).join('');
+}
+
+function hourOptions(selected) {
+  return HOURS.map(h => `<option value="${h}"${h===selected?' selected':''}>${h}</option>`).join('');
+}
+
+function periodOptions(selected) {
+  return PERIODS.map(p => `<option value="${p}"${p===selected?' selected':''}>${p}</option>`).join('');
+}
+
+// ── Build single session row HTML ─────────────────────────────
+function makeSessionHTML(dayIdx, sesIdx, ses, canRemove) {
+  return `
+    <div class="session-row" data-day="${dayIdx}" data-ses="${sesIdx}">
+      <span class="session-num">Session ${sesIdx+1}</span>
+      <select class="shop-select" onchange="saveState()" title="Shop">
+        ${shopOptions(ses.shop)}
+      </select>
+
+      <div class="time-group">
+        <div class="time-select-wrap">
+          <select class="mini-select s-startH" onchange="saveState()">
+            ${hourOptions(ses.startH)}
+          </select>
+          <span style="color:var(--text-muted);font-size:11px;">:</span>
+          <select class="period-select s-startP" style="font-family:'Noto Sans Myanmar',sans-serif;" onchange="saveState()">
+            ${periodOptions(ses.startP)}
+          </select>
+        </div>
+      </div>
+
+      <div class="time-group">
+        <span class="time-separator">→</span>
+        <div class="time-select-wrap">
+          <select class="mini-select s-endH" onchange="saveState()">
+            ${hourOptions(ses.endH)}
+          </select>
+          <span style="color:var(--text-muted);font-size:11px;">:</span>
+          <select class="period-select s-endP" style="font-family:'Noto Sans Myanmar',sans-serif;" onchange="saveState()">
+            ${periodOptions(ses.endP)}
+          </select>
+        </div>
+      </div>
+
+      <button class="remove-session-btn" onclick="removeSession(${dayIdx}, this)" ${canRemove?'':'style="visibility:hidden;"'} title="Remove session">−</button>
+    </div>
+  `;
+}
+
+// ── Add session ───────────────────────────────────────────────
+function addSession(dayIdx) {
+  const wrapper = document.querySelector(`.sessions-wrapper[data-day="${dayIdx}"]`);
+  const count   = wrapper.querySelectorAll('.session-row').length;
+  const div     = document.createElement('div');
+  div.innerHTML = makeSessionHTML(dayIdx, count, { ...DEFAULT_SESSION }, true);
+  wrapper.appendChild(div.firstElementChild);
+  // show remove on first if now >=2
+  refreshRemoveBtns(dayIdx);
+  saveState();
+}
+
+// ── Remove session ────────────────────────────────────────────
+function removeSession(dayIdx, btn) {
+  const row     = btn.closest('.session-row');
+  const wrapper = row.closest('.sessions-wrapper');
+  if (wrapper.querySelectorAll('.session-row').length <= 1) return;
+  row.remove();
+  // re-number
+  wrapper.querySelectorAll('.session-row').forEach((r, i) => {
+    r.dataset.ses = i;
+    const num = r.querySelector('.session-num');
+    if (num) num.textContent = `Session ${i+1}`;
+  });
+  refreshRemoveBtns(dayIdx);
+  saveState();
+}
+
+// ── Show/hide remove buttons ──────────────────────────────────
+function refreshRemoveBtns(dayIdx) {
+  const wrapper = document.querySelector(`.sessions-wrapper[data-day="${dayIdx}"]`);
+  const rows    = wrapper.querySelectorAll('.session-row');
+  rows.forEach(r => {
+    const btn = r.querySelector('.remove-session-btn');
+    if (btn) btn.style.visibility = rows.length > 1 ? 'visible' : 'hidden';
+  });
+}
+
+// ── Off toggle ────────────────────────────────────────────────
+function toggleOff(i) {
+  const cb    = document.getElementById(`off-${i}`);
+  const block = document.getElementById(`block-${i}`);
+  block.classList.toggle('is-off', cb.checked);
+}
+
+// ── Build all day blocks ──────────────────────────────────────
+function buildRows(saved) {
+  const container = document.getElementById('scheduleRows');
+  container.innerHTML = '';
+
+  DAYS_MY.forEach((day, i) => {
+    const def      = (saved?.days?.[i]) ?? DEFAULT_SCHEDULE[i];
+    const sessions = def.sessions ?? [{ ...DEFAULT_SESSION }];
+    const isOff    = !!def.off;
+
+    const block = document.createElement('div');
+    block.className = 'day-block' + (isOff ? ' is-off' : '');
+    block.id = `block-${i}`;
+
+    const sessionsHTML = sessions.map((ses, si) =>
+      makeSessionHTML(i, si, ses, sessions.length > 1)
+    ).join('');
+
+    block.innerHTML = `
+      <div class="day-header">
+        <div class="day-header-left">
+          <div class="day-badge">${day}</div>
+          <label class="off-toggle">
+            <input type="checkbox" id="off-${i}" ${isOff?'checked':''} onchange="toggleOff(${i}); saveState();">
+            <div class="toggle-btn"></div>
+            <span class="off-label">ပိတ်</span>
+          </label>
+        </div>
+        <button class="add-session-btn" onclick="addSession(${i})">+ Add Session</button>
+      </div>
+      <div class="sessions-wrapper" data-day="${i}">
+        ${sessionsHTML}
+      </div>
+    `;
+    container.appendChild(block);
+  });
+}
+
+// ── Build start date dropdown ─────────────────────────────────
+function buildStartDate(saved) {
+  const sel      = document.getElementById('startDateInput');
+  const savedVal = saved?.meta?.startDate ?? DEFAULT_META.startDate;
+  sel.innerHTML  = Array.from({length:31},(_,i)=>
+    `<option value="${i+1}"${String(i+1)===String(savedVal)?' selected':''}>${i+1}</option>`
+  ).join('');
+}
+
+// ── Restore meta selects ──────────────────────────────────────
+function restoreMeta(saved) {
+  if (!saved?.meta) return;
+  const month = document.getElementById('monthSelect');
+  const week  = document.getElementById('weekNote');
+  if (month && saved.meta.month)    month.value = saved.meta.month;
+  if (week  && saved.meta.weekNote) week.value  = saved.meta.weekNote;
+}
+
+// ── Attach listeners ──────────────────────────────────────────
+function attachMetaListeners() {
+  ['monthSelect','weekNote','startDateInput'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', saveState);
+  });
+}
+
+// ── Clear ─────────────────────────────────────────────────────
+function clearSavedData() {
+  if (!confirm('Clear all saved data and reset to defaults?')) return;
+  localStorage.removeItem(LS_KEY);
+  location.reload();
+}
+
+// ── Generate schedule ─────────────────────────────────────────
+function generateSchedule() {
+  const month     = document.getElementById('monthSelect').value;
+  const startDate = parseInt(document.getElementById('startDateInput')?.value || '9');
+
+  const lines     = [];
+  const tableRows = [];
+
+  if (month) {
+    const endDate = startDate + 6;
+    lines.push(`${month} ${startDate} to ${endDate} - 2025 အချိန်ဇယား`);
+  }
+  lines.push('');
+
+  for (let i = 0; i < 7; i++) {
+    const date  = startDate + i;
+    const dayMy = DAYS_MY[i];
+    const isOff = document.getElementById(`off-${i}`).checked;
+
+    if (isOff) {
+      lines.push(`(${date})${dayMy}- ပိတ်`);
+      tableRows.push({ date, day: dayMy, isOff: true, sessions: [] });
+    } else {
+      const sesRows = document.querySelectorAll(`.session-row[data-day="${i}"]`);
+      const sessions = Array.from(sesRows).map(row => ({
+        shop:   row.querySelector('.shop-select')?.value ?? 'Kashihara',
+        startH: row.querySelector('.s-startH')?.value   ?? '6',
+        startP: row.querySelector('.s-startP')?.value   ?? 'ညနေ',
+        endH:   row.querySelector('.s-endH')?.value     ?? '3',
+        endP:   row.querySelector('.s-endP')?.value     ?? 'မနက်',
+      }));
+
+      const timeParts = sessions.map(s =>
+        `[${s.shop}] ${s.startP} ${s.startH}:00 - ${s.endP} ${s.endH}:00`
+      );
+      lines.push(`(${date})${dayMy}- ${timeParts.join(' / ')}`);
+      tableRows.push({ date, day: dayMy, isOff: false, sessions });
+    }
+  }
+
+  document.getElementById('outputText').textContent = lines.join('\n');
+
+  const tbody = document.getElementById('previewBody');
+  tbody.innerHTML = '';
+  tableRows.forEach(r => {
+    const tr = document.createElement('tr');
+    const sessionCell = r.isOff
+      ? `<span class="status-off">ပိတ်</span>`
+      : `<div class="status-session">${r.sessions.map(s=>
+          `<span class="session-chip">
+            <span class="session-shop-tag">${s.shop}</span>
+            ${s.startP} ${s.startH}:00 → ${s.endP} ${s.endH}:00
+          </span>`).join('')}
+        </div>`;
+    tr.innerHTML = `
+      <td style="color:var(--accent);font-weight:500;">${r.date}</td>
+      <td style="font-family:'Noto Sans Myanmar',sans-serif;">${r.day}</td>
+      <td>${sessionCell}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const card = document.getElementById('outputCard');
+  card.classList.add('visible');
+  card.scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+// ── Copy ──────────────────────────────────────────────────────
+function copySchedule() {
+  const text = document.getElementById('outputText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    btn.style.cssText += ';background:rgba(76,175,132,0.15);border-color:rgba(76,175,132,0.4);color:var(--success)';
+    setTimeout(() => { btn.textContent = orig; btn.style.cssText = ''; }, 2000);
+  });
+}
+
+// ── Init ──────────────────────────────────────────────────────
+(function init() {
+  const saved = loadState();
+
+  // Save toast
+  const toast = document.createElement('div');
+  toast.id = 'saveToast';
+  toast.textContent = '✦ Saved';
+  toast.style.cssText = `
+    position:fixed; bottom:24px; right:24px; z-index:999;
+    background:rgba(76,175,132,0.15); border:1px solid rgba(76,175,132,0.35);
+    color:#4caf84; font-family:'DM Mono',monospace; font-size:11px;
+    letter-spacing:2px; padding:8px 18px; border-radius:8px;
+    opacity:0; transform:translateY(8px);
+    transition:opacity 0.3s, transform 0.3s; pointer-events:none;
+  `;
+  document.body.appendChild(toast);
+  const style = document.createElement('style');
+  style.textContent = `#saveToast.show { opacity:1 !important; transform:translateY(0) !important; }`;
+  document.head.appendChild(style);
+
+  // Reset button
+  const genBtn   = document.querySelector('.generate-btn');
+  const resetBtn = document.createElement('button');
+  resetBtn.textContent = '↺ Reset to Defaults';
+  resetBtn.onclick     = clearSavedData;
+  resetBtn.style.cssText = `
+    width:100%; padding:10px; margin-top:10px;
+    background:transparent; border:1px solid var(--border);
+    color:var(--text-muted); border-radius:8px;
+    font-family:'DM Mono',monospace; font-size:12px;
+    letter-spacing:2px; text-transform:uppercase;
+    cursor:pointer; transition:all 0.2s;
+  `;
+  resetBtn.onmouseenter = () => { resetBtn.style.borderColor='rgba(224,92,106,0.4)'; resetBtn.style.color='var(--danger)'; };
+  resetBtn.onmouseleave = () => { resetBtn.style.borderColor='var(--border)'; resetBtn.style.color='var(--text-muted)'; };
+  genBtn.insertAdjacentElement('afterend', resetBtn);
+
+  // Build UI
+  buildStartDate(saved);
+  buildRows(saved);
+  restoreMeta(saved);
+  attachMetaListeners();
+
+  if (saved) {
+    setTimeout(() => {
+      const t = document.getElementById('saveToast');
+      t.textContent = '↺ Restored';
+      t.classList.add('show');
+      setTimeout(() => { t.classList.remove('show'); setTimeout(()=>{ t.textContent='✦ Saved'; },400); }, 2000);
+    }, 600);
+  }
+})();
+</script>
+</body>
+</html>

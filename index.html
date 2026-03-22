@@ -1390,7 +1390,7 @@
 							// );
 							const timeParts = sessions.map(
 								(s) =>
-									`【${s.shop}】${s.startH}:${s.startM}〜${s.endH}:${s.endM}`,
+									`[${s.shop}] ${s.startH}:${s.startM}-${s.endH}:${s.endM}`,
 							);
 							lines.push(`${date}(${dayJp})- ${timeParts.join(' / ')}`);
 							tableRows.push({ date, day: dayJp, isOff: false, sessions });

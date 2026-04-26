@@ -5,37 +5,43 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Shift Schedule Generator</title>
 		<link
-			href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500&family=Sawarabi+Mincho&family=DM+Mono:wght@300;400;500&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500&family=DM+Mono:wght@300;400;500&display=swap"
 			rel="stylesheet"
 		/>
 		<style>
-			/* :root {
-				--bg: #0d0f14;
-				--surface: #161921;
-				--surface2: #1e2330;
-				--border: #2a3040;
-				--accent: #f5a623;
-				--text: #e8eaf0;
-				--text-muted: #7a8299;
-				--success: #4caf84;
-				--danger: #e05c6a;
-				--card-glow: rgba(245, 166, 35, 0.08);
-				--jp-accent: #7eb8f7;
-				--jp-glow: rgba(126, 184, 247, 0.08);
-			} */
+			/* ── GitHub Light Design Tokens ── */
 			:root {
-				--bg: #f4f5f7;
-				--surface: #ffffff;
-				--surface2: #f0f1f4;
-				--border: #dde0e8;
-				--accent: #d4880a;
-        --text: #0a0c14;
-        --text-muted: #3d4454;
-				--success: #2d8f63;
-				--danger: #c0394a;
-				--card-glow: rgba(212, 136, 10, 0.08);
-				--jp-accent: #2c7fd4;
-				--jp-glow: rgba(44, 127, 212, 0.08);
+				--color-canvas-default: #ffffff;
+				--color-canvas-subtle: #f6f8fa;
+				--color-canvas-inset: #f0f2f5;
+				--color-border-default: #d0d7de;
+				--color-border-muted: #d8dee4;
+				--color-border-subtle: #e6eaef;
+				--color-fg-default: #271f28;
+				--color-fg-muted: #656d76;
+				--color-fg-subtle: #6e7781;
+				--color-fg-on-emphasis: #ffffff;
+				--color-accent-fg: #000000;
+				--color-accent-emphasis: #0969da;
+				--color-accent-subtle: #ddf4ff;
+				--color-accent-muted: #54aeff66;
+				--color-success-fg: #1a7f37;
+				--color-success-subtle: #dafbe1;
+				--color-danger-fg: #cf222e;
+				--color-danger-subtle: #ffebe9;
+				--color-danger-muted: #ff818266;
+				--color-warning-fg: #9a6700;
+				--color-warning-subtle: #fff8c5;
+				--color-my-accent: #bf4b08;
+				--color-my-subtle: #fff1e0;
+				--color-jp-accent: #0969da;
+				--color-jp-subtle: #ddf4ff;
+				--shadow-sm: 0 1px 0 rgba(31, 35, 40, 0.04);
+				--shadow-md: 0 3px 6px rgba(140, 149, 159, 0.15);
+				--shadow-overlay: 0 8px 24px rgba(140, 149, 159, 0.2);
+				--radius-sm: 6px;
+				--radius-md: 8px;
+				--radius-lg: 12px;
 			}
 
 			* {
@@ -45,225 +51,18 @@
 			}
 
 			body {
-				background: var(--bg);
-				color: var(--text);
-				font-family: 'DM Mono', 'Noto Sans Myanmar', monospace;
+				background: var(--color-canvas-subtle);
+				color: var(--color-fg-default);
+				font-family: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+				font-size: 14px;
+				line-height: 1.5;
 				min-height: 100vh;
-				overflow-x: hidden;
 			}
 
-			/* body::before {
-				content: '';
-				position: fixed;
-				inset: 0;
-				background:
-					radial-gradient(
-						ellipse 60% 40% at 20% 20%,
-						rgba(245, 166, 35, 0.06) 0%,
-						transparent 60%
-					),
-					radial-gradient(
-						ellipse 50% 50% at 80% 80%,
-						rgba(232, 103, 42, 0.05) 0%,
-						transparent 60%
-					);
-				pointer-events: none;
-				z-index: 0;
-				transition: background 0.5s;
-			} */
-			body::before {
-				background:
-					radial-gradient(
-						ellipse 60% 40% at 20% 20%,
-						rgba(212, 136, 10, 0.07) 0%,
-						transparent 60%
-					),
-					radial-gradient(
-						ellipse 50% 50% at 80% 80%,
-						rgba(232, 103, 42, 0.05) 0%,
-						transparent 60%
-					);
-			}
-
-			/* body.jp-mode::before {
-				background:
-					radial-gradient(
-						ellipse 60% 40% at 20% 20%,
-						rgba(126, 184, 247, 0.07) 0%,
-						transparent 60%
-					),
-					radial-gradient(
-						ellipse 50% 50% at 80% 80%,
-						rgba(180, 130, 240, 0.05) 0%,
-						transparent 60%
-					);
-			} */
-
-			body.jp-mode::before {
-				background:
-					radial-gradient(
-						ellipse 60% 40% at 20% 20%,
-						rgba(44, 127, 212, 0.08) 0%,
-						transparent 60%
-					),
-					radial-gradient(
-						ellipse 50% 50% at 80% 80%,
-						rgba(130, 80, 200, 0.05) 0%,
-						transparent 60%
-					);
-			}
-
-			.container {
-				position: relative;
-				z-index: 1;
-				max-width: 980px;
-				margin: 0 auto;
-				padding: 40px 20px 60px;
-			}
-
-			/* Header */
-			.header {
-				text-align: center;
-				margin-bottom: 36px;
-				animation: fadeDown 0.7s ease both;
-			}
-			.header-badge {
-				display: inline-block;
-				font-size: 11px;
-				letter-spacing: 3px;
-				text-transform: uppercase;
-				color: var(--accent);
-				border: 1px solid rgba(245, 166, 35, 0.3);
-				padding: 5px 16px;
-				border-radius: 20px;
-				margin-bottom: 18px;
-				background: rgba(245, 166, 35, 0.06);
-				transition: all 0.4s;
-			}
-			body.jp-mode .header-badge {
-				color: var(--jp-accent);
-				border-color: rgba(126, 184, 247, 0.3);
-				background: rgba(126, 184, 247, 0.06);
-			}
-			.header h1 {
-				font-family: 'Sawarabi Mincho', serif;
-				font-size: clamp(28px, 5vw, 42px);
-				font-weight: 400;
-				letter-spacing: 2px;
-				margin-bottom: 10px;
-				background: linear-gradient(135deg, #f5a623, #e8672a, #f5a623);
-				-webkit-background-clip: text;
-				-webkit-text-fill-color: transparent;
-				background-clip: text;
-				transition: all 0.4s;
-			}
-			body.jp-mode .header h1 {
-				background: linear-gradient(135deg, #7eb8f7, #b482f0, #7eb8f7);
-				-webkit-background-clip: text;
-				background-clip: text;
-			}
-			.header-sub {
-				font-size: 15px;
-				color: var(--text-muted);
-				letter-spacing: 1px;
-			}
-			.sub-my {
-				font-family: 'Noto Sans Myanmar', sans-serif;
-			}
-			.sub-jp {
-				font-family: 'Noto Sans JP', sans-serif;
-				display: none;
-			}
-			body.jp-mode .sub-my {
-				display: none;
-			}
-			body.jp-mode .sub-jp {
-				display: block;
-			}
-
-			/* Mode switcher */
-			.mode-switcher {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: 0;
-				margin-bottom: 32px;
-				animation: fadeDown 0.7s 0.08s ease both;
-			}
-			.mode-btn {
-				padding: 10px 30px;
-				border: 1px solid var(--border);
-				background: transparent;
-				color: var(--text-muted);
-				font-family: 'DM Mono', monospace;
-				font-size: 12px;
-				letter-spacing: 2px;
-				cursor: pointer;
-				transition: all 0.25s;
-			}
-			.mode-btn:first-child {
-				border-radius: 8px 0 0 8px;
-				border-right: none;
-			}
-			.mode-btn:last-child {
-				border-radius: 0 8px 8px 0;
-			}
-			.mode-btn.active-my {
-				background: rgba(245, 166, 35, 0.12);
-				border-color: rgba(245, 166, 35, 0.5);
-				color: var(--accent);
-			}
-			.mode-btn.active-jp {
-				background: rgba(126, 184, 247, 0.12);
-				border-color: rgba(126, 184, 247, 0.5);
-				color: var(--jp-accent);
-				font-family: 'Noto Sans JP', sans-serif;
-				font-size: 13px;
-				letter-spacing: 1px;
-			}
-
-			/* Builder card */
-			.builder-card {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 16px;
-				padding: 36px;
-				margin-bottom: 28px;
-				animation: fadeUp 0.7s 0.15s ease both;
-				box-shadow: 0 0 60px var(--card-glow);
-				transition:
-					box-shadow 0.4s,
-					border-color 0.4s;
-			}
-			body.jp-mode .builder-card {
-				box-shadow: 0 0 60px var(--jp-glow);
-				border-color: rgba(126, 184, 247, 0.15);
-			}
-
-			.section-label {
-				font-size: 10px;
-				letter-spacing: 3px;
-				text-transform: uppercase;
-				color: var(--accent);
-				margin-bottom: 24px;
-				display: flex;
-				align-items: center;
-				gap: 10px;
-				transition: color 0.3s;
-			}
-			body.jp-mode .section-label {
-				color: var(--jp-accent);
-			}
-			.section-label::after {
-				content: '';
-				flex: 1;
-				height: 1px;
-				background: linear-gradient(to right, var(--border), transparent);
-			}
-
-			/* locale spans */
+			/* ── Locale helpers ── */
 			.lbl-my {
 				display: inline;
+				font-family: 'Noto Sans Myanmar', sans-serif;
 			}
 			.lbl-jp {
 				display: none;
@@ -275,13 +74,208 @@
 			body.jp-mode .lbl-jp {
 				display: inline;
 			}
+			.badge-jp {
+				display: none;
+				font-family: 'Noto Sans JP', sans-serif;
+			}
+			body.jp-mode .badge-my {
+				display: none;
+			}
+			body.jp-mode .badge-jp {
+				display: inline;
+			}
+			.sub-jp {
+				display: none;
+				font-family: 'Noto Sans JP', sans-serif;
+			}
+			body.jp-mode .sub-my {
+				display: none;
+			}
+			body.jp-mode .sub-jp {
+				display: inline-block;
+			}
 
+			/* ── Layout ── */
+			.gh-topbar {
+				background: var(--color-canvas-default);
+				border-bottom: 1px solid var(--color-border-default);
+				padding: 10px 0;
+				position: sticky;
+				top: 0;
+				z-index: 100;
+				box-shadow: var(--shadow-sm);
+			}
+			.gh-topbar-inner {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 0 12px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 8px;
+				flex-wrap: nowrap;
+			}
+			.gh-brand {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				font-size: 13px;
+				font-weight: 500;
+				color: var(--color-fg-default);
+				text-decoration: none;
+				min-width: 0;
+				flex-shrink: 1;
+			}
+			.gh-brand-icon {
+				width: 26px;
+				height: 26px;
+				background: var(--color-fg-default);
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				font-size: 13px;
+				flex-shrink: 0;
+			}
+			.gh-brand-text {
+				display: flex;
+				align-items: center;
+				gap: 4px;
+				min-width: 0;
+				overflow: hidden;
+			}
+			.gh-brand-name {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				font-size: 12px;
+			}
+			.gh-brand-sep {
+				color: var(--color-border-default);
+				margin: 0 1px;
+				flex-shrink: 0;
+			}
+			.gh-brand-repo {
+				color: var(--color-accent-fg);
+				white-space: nowrap;
+				font-size: 12px;
+			}
+			/* ── Mode switcher in topbar ── */
+			.mode-switcher {
+				display: inline-flex;
+				background: var(--color-canvas-inset);
+				border: 1px solid var(--color-border-default);
+				border-radius: var(--radius-md);
+				padding: 3px;
+				gap: 2px;
+				flex-shrink: 0;
+			}
+
+			.container {
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 24px 16px 48px;
+			}
+
+			.mode-btn {
+				padding: 4px 10px;
+				border: none;
+				background: transparent;
+				color: var(--color-fg-muted);
+				font-family: 'DM Mono', monospace;
+				font-size: 11px;
+				border-radius: 5px;
+				cursor: pointer;
+				transition: all 0.15s;
+				letter-spacing: 0.3px;
+				font-weight: 400;
+				white-space: nowrap;
+				line-height: 1.4;
+			}
+			.mode-btn.active-my,
+			.mode-btn.active-jp {
+				background: var(--color-canvas-default);
+				color: var(--color-fg-default);
+				box-shadow:
+					var(--shadow-md),
+					0 0 0 1px var(--color-border-muted);
+				font-weight: 500;
+			}
+			.mode-btn.active-jp {
+				font-family: 'Noto Sans JP', sans-serif;
+			}
+			@media (max-width: 400px) {
+				.mode-btn {
+					padding: 3px 7px;
+					font-size: 10px;
+				}
+				.gh-brand-name {
+					display: none;
+				}
+				.gh-brand-sep {
+					display: none;
+				}
+			}
+
+			/* ── Page header ── */
+			.page-header {
+				margin-bottom: 20px;
+				padding-bottom: 16px;
+				border-bottom: 1px solid var(--color-border-default);
+			}
+			.page-header h1 {
+				font-size: 20px;
+				font-weight: 600;
+				color: var(--color-fg-default);
+				letter-spacing: -0.3px;
+				margin-bottom: 4px;
+			}
+			.page-header p {
+				font-size: 13px;
+				color: var(--color-fg-muted);
+				font-family: 'Noto Sans Myanmar', sans-serif;
+			}
+			body.jp-mode .page-header p {
+				font-family: 'Noto Sans JP', sans-serif;
+			}
+
+			/* ── Card (GitHub box style) ── */
+			.gh-box {
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				border-radius: var(--radius-lg);
+				overflow: hidden;
+				margin-bottom: 16px;
+			}
+			.gh-box-header {
+				padding: 12px 16px;
+				background: var(--color-canvas-subtle);
+				border-bottom: 1px solid var(--color-border-default);
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 8px;
+			}
+			.gh-box-title {
+				font-size: 12px;
+				font-weight: 600;
+				color: var(--color-fg-default);
+				text-transform: uppercase;
+				letter-spacing: 0.8px;
+			}
+			.gh-box-body {
+				padding: 16px;
+			}
+
+			/* ── Field / form ── */
 			.grid-2 {
 				display: grid;
 				grid-template-columns: 1fr 1fr;
-				gap: 20px;
+				gap: 12px;
+				margin-bottom: 16px;
 			}
-			@media (max-width: 600px) {
+			@media (max-width: 540px) {
 				.grid-2 {
 					grid-template-columns: 1fr;
 				}
@@ -290,158 +284,139 @@
 			.field {
 				display: flex;
 				flex-direction: column;
-				gap: 8px;
+				gap: 5px;
 			}
 			.field label {
 				font-size: 11px;
-				letter-spacing: 2px;
+				font-weight: 600;
+				color: var(--color-fg-muted);
 				text-transform: uppercase;
-				color: var(--text-muted);
+				letter-spacing: 0.8px;
 			}
-			.field select,
-			.field input {
-				background: var(--surface2);
-				border: 1px solid var(--border);
-				color: var(--text);
-				padding: 12px 36px 12px 16px;
-				border-radius: 8px;
-				font-family: inherit;
-				font-size: 14px;
+			.field select {
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-default);
+				padding: 6px 28px 6px 10px;
+				border-radius: var(--radius-sm);
+				font-family: 'DM Mono', monospace;
+				font-size: 13px;
 				outline: none;
 				cursor: pointer;
-				transition: all 0.2s;
+				transition:
+					border-color 0.15s,
+					box-shadow 0.15s;
 				appearance: none;
 				-webkit-appearance: none;
-				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8299' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23656d76' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
 				background-repeat: no-repeat;
-				background-position: right 14px center;
+				background-position: right 10px center;
+				height: 34px;
 			}
-			.field select:focus,
-			.field input:focus {
-				border-color: rgba(245, 166, 35, 0.5);
-				background-color: #232838;
+			.field select:focus {
+				border-color: var(--color-accent-emphasis);
+				box-shadow: 0 0 0 3px var(--color-accent-muted);
+				outline: none;
 			}
-			body.jp-mode .field select:focus,
-			body.jp-mode .field input:focus {
-				border-color: rgba(126, 184, 247, 0.5);
+			.field select#monthSelect {
+				font-family: 'Noto Sans Myanmar', sans-serif;
+				font-size: 13px;
+			}
+			body.jp-mode .field select#monthSelect {
+				font-family: 'Noto Sans JP', sans-serif;
 			}
 
-			/* Day block */
+			/* ── Day blocks ── */
 			.day-block {
-				background: var(--surface2);
-				border: 1px solid var(--border);
-				border-radius: 12px;
-				margin-bottom: 12px;
+				border: 1px solid var(--color-border-default);
+				border-radius: var(--radius-md);
+				margin-bottom: 8px;
 				overflow: hidden;
-				transition: border-color 0.2s;
+				transition: border-color 0.15s;
+				background: var(--color-canvas-default);
 			}
 			.day-block:hover {
-				border-color: rgba(245, 166, 35, 0.28);
-			}
-			body.jp-mode .day-block:hover {
-				border-color: rgba(126, 184, 247, 0.28);
+				border-color: var(--color-accent-fg);
 			}
 			.day-block.is-off {
-				opacity: 0.5;
+				opacity: 0.55;
 			}
 			.day-block.is-off .sessions-wrapper {
 				pointer-events: none;
-				opacity: 0.35;
+				opacity: 0.4;
 			}
 
 			.day-header {
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				padding: 11px 16px;
-				border-bottom: 1px solid var(--border);
-				background: rgba(245, 166, 35, 0.04);
-				transition: background 0.3s;
-			}
-			body.jp-mode .day-header {
-				background: rgba(126, 184, 247, 0.04);
+				padding: 8px 12px;
+				background: var(--color-canvas-subtle);
+				border-bottom: 1px solid var(--color-border-subtle);
 			}
 			.day-header-left {
 				display: flex;
 				align-items: center;
-				gap: 12px;
+				gap: 10px;
 			}
 
 			.day-badge {
-				background: rgba(245, 166, 35, 0.1);
-				border: 1px solid rgba(245, 166, 35, 0.2);
-				color: var(--accent);
-				font-size: 12px;
-				padding: 4px 12px;
-				border-radius: 6px;
+				background: var(--color-canvas-inset);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-default);
+				font-size: 11px;
+				font-weight: 600;
+				padding: 2px 10px;
+				border-radius: 20px;
 				white-space: nowrap;
-				min-width: 82px;
+				min-width: 80px;
 				text-align: center;
-				transition: all 0.3s;
 			}
 			.badge-my {
 				font-family: 'Noto Sans Myanmar', sans-serif;
-			}
-			.badge-jp {
-				font-family: 'Noto Sans JP', sans-serif;
-				display: none;
-			}
-			body.jp-mode .badge-my {
-				display: none;
-			}
-			body.jp-mode .badge-jp {
-				display: inline;
-			}
-			body.jp-mode .day-badge {
-				background: rgba(126, 184, 247, 0.1);
-				border-color: rgba(126, 184, 247, 0.2);
-				color: var(--jp-accent);
 			}
 
 			/* Off toggle */
 			.off-toggle {
 				display: flex;
 				align-items: center;
-				gap: 8px;
+				gap: 6px;
 				cursor: pointer;
 			}
 			.off-toggle input[type='checkbox'] {
 				display: none;
 			}
 			.toggle-btn {
-				width: 44px;
-				height: 24px;
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 12px;
+				width: 36px;
+				height: 20px;
+				background: var(--color-border-default);
+				border-radius: 10px;
 				position: relative;
-				transition: all 0.25s;
+				transition: background 0.2s;
 				cursor: pointer;
 				flex-shrink: 0;
 			}
 			.toggle-btn::after {
 				content: '';
 				position: absolute;
-				width: 18px;
-				height: 18px;
-				background: var(--text-muted);
+				width: 14px;
+				height: 14px;
+				background: white;
 				border-radius: 50%;
-				top: 2px;
-				left: 2px;
-				transition: all 0.25s;
+				top: 3px;
+				left: 3px;
+				transition: transform 0.2s;
+				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 			}
 			.off-toggle input:checked + .toggle-btn {
-				background: rgba(224, 92, 106, 0.2);
-				border-color: var(--danger);
+				background: var(--color-danger-fg);
 			}
 			.off-toggle input:checked + .toggle-btn::after {
-				transform: translateX(20px);
-				background: var(--danger);
+				transform: translateX(16px);
 			}
 			.off-label {
 				font-size: 11px;
-				color: var(--text-muted);
-				letter-spacing: 1px;
+				color: var(--color-fg-muted);
 			}
 			.off-label .lbl-my {
 				font-family: 'Noto Sans Myanmar', sans-serif;
@@ -453,189 +428,115 @@
 			/* Add session btn */
 			.add-session-btn {
 				background: transparent;
-				border: 1px dashed rgba(245, 166, 35, 0.38);
-				color: var(--accent);
-				padding: 5px 13px;
-				border-radius: 6px;
-				font-family: inherit;
+				border: 1px dashed var(--color-border-default);
+				color: var(--color-fg-muted);
+				padding: 3px 10px;
+				border-radius: var(--radius-sm);
+				font-family: 'DM Mono', monospace;
 				font-size: 11px;
-				letter-spacing: 1.5px;
 				cursor: pointer;
-				transition: all 0.2s;
+				transition: all 0.15s;
+				letter-spacing: 0.3px;
 			}
 			.add-session-btn:hover {
-				background: rgba(245, 166, 35, 0.08);
-				border-color: rgba(245, 166, 35, 0.65);
-			}
-			body.jp-mode .add-session-btn {
-				border-color: rgba(126, 184, 247, 0.38);
-				color: var(--jp-accent);
-			}
-			body.jp-mode .add-session-btn:hover {
-				background: rgba(126, 184, 247, 0.08);
-				border-color: rgba(126, 184, 247, 0.65);
+				border-color: var(--color-accent-fg);
+				color: var(--color-accent-fg);
+				background: var(--color-accent-subtle);
 			}
 
 			/* Sessions wrapper */
 			.sessions-wrapper {
-				padding: 12px 16px 10px;
+				padding: 10px 12px 8px;
 				display: flex;
 				flex-direction: column;
-				gap: 10px;
+				gap: 8px;
 			}
 
 			/* Session row */
 			.session-row {
 				display: grid;
-				grid-template-columns: 152px 1fr 1fr auto;
+				grid-template-columns: 148px 1fr 1fr auto;
 				align-items: center;
-				gap: 12px;
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 8px;
-				padding: 12px 14px 10px;
-				animation: fadeUp 0.25s ease both;
+				gap: 8px;
+				background: var(--color-canvas-subtle);
+				border: 1px solid var(--color-border-subtle);
+				border-radius: var(--radius-sm);
+				padding: 8px 10px;
 				position: relative;
+				animation: fadeUp 0.2s ease both;
 			}
 			.session-row:hover {
-				border-color: rgba(245, 166, 35, 0.22);
-			}
-			body.jp-mode .session-row:hover {
-				border-color: rgba(126, 184, 247, 0.22);
+				border-color: var(--color-border-default);
 			}
 			.session-num {
 				position: absolute;
-				top: -8px;
-				left: 12px;
+				top: -7px;
+				left: 10px;
 				font-size: 9px;
-				letter-spacing: 2px;
-				color: var(--text-muted);
-				background: var(--surface2);
-				border: 1px solid var(--border);
+				letter-spacing: 0.8px;
+				color: var(--color-fg-subtle);
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-subtle);
 				border-radius: 4px;
-				padding: 1px 7px;
+				padding: 0 5px;
 				text-transform: uppercase;
+			}
+			@media (max-width: 640px) {
+				.session-row {
+					grid-template-columns: 1fr;
+					gap: 8px;
+				}
 			}
 
 			/* Shop select */
 			.shop-select {
-				background: var(--surface2);
-				border: 1px solid rgba(245, 166, 35, 0.28);
-				color: var(--accent);
-				padding: 7px 26px 7px 10px;
-				border-radius: 6px;
-				font-family: inherit;
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-default);
+				padding: 5px 22px 5px 8px;
+				border-radius: var(--radius-sm);
+				font-family: 'DM Mono', monospace;
 				font-size: 12px;
 				outline: none;
 				cursor: pointer;
-				transition: all 0.2s;
+				transition: all 0.15s;
 				appearance: none;
 				-webkit-appearance: none;
 				width: 100%;
-				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23f5a623' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+				height: 30px;
+				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23656d76' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
 				background-repeat: no-repeat;
-				background-position: right 8px center;
+				background-position: right 7px center;
 			}
 			.shop-select:focus {
-				border-color: rgba(245, 166, 35, 0.65);
+				border-color: var(--color-accent-emphasis);
+				box-shadow: 0 0 0 3px var(--color-accent-muted);
 			}
 			body.jp-mode .shop-select {
-				border-color: rgba(126, 184, 247, 0.3);
-				color: var(--jp-accent);
 				font-family: 'Noto Sans JP', sans-serif;
 				font-size: 13px;
-				background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237eb8f7' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
-			}
-			body.jp-mode .shop-select:focus {
-				border-color: rgba(126, 184, 247, 0.65);
 			}
 
-			/* Time groups */
+			/* Time controls */
 			.time-group {
 				display: flex;
 				align-items: center;
-				gap: 5px;
+				gap: 4px;
 			}
 			.time-select-wrap {
 				display: flex;
 				align-items: center;
-				gap: 4px;
+				gap: 3px;
 			}
-
-			.mini-select {
-				background: var(--surface2);
-				border: 1px solid var(--border);
-				color: var(--text);
-				padding: 7px 5px;
-				border-radius: 6px;
-				font-family: 'DM Mono', monospace;
-				font-size: 13px;
-				outline: none;
-				cursor: pointer;
-				transition: all 0.2s;
-				appearance: none;
-				-webkit-appearance: none;
-				min-width: 46px;
-				text-align: center;
-			}
-			.mini-select:focus {
-				border-color: rgba(245, 166, 35, 0.5);
-			}
-			body.jp-mode .mini-select:focus {
-				border-color: rgba(126, 184, 247, 0.5);
-			}
-
-			.period-select {
-				background: var(--surface2);
-				border: 1px solid var(--border);
-				color: var(--text);
-				padding: 7px 8px;
-				border-radius: 6px;
-				font-family: 'Noto Sans Myanmar', sans-serif;
-				font-size: 12px;
-				outline: none;
-				cursor: pointer;
-				transition: all 0.2s;
-				appearance: none;
-				-webkit-appearance: none;
-				min-width: 78px;
-			}
-			.period-select:focus {
-				border-color: rgba(245, 166, 35, 0.5);
-			}
-
-			/* JP minute select (hidden in MY mode) */
-			.jp-min-select {
-				background: var(--surface2);
-				border: 1px solid var(--border);
-				color: var(--text);
-				padding: 7px 5px;
-				border-radius: 6px;
-				font-family: 'DM Mono', monospace;
-				font-size: 13px;
-				outline: none;
-				cursor: pointer;
-				transition: all 0.2s;
-				appearance: none;
-				-webkit-appearance: none;
-				min-width: 46px;
-				text-align: center;
-				display: none;
-			}
-			body.jp-mode .jp-min-select {
-				display: inline-block;
-			}
-
-			/* Toggle 12h/24h inner groups */
 			.wrap-my {
 				display: flex;
 				align-items: center;
-				gap: 4px;
+				gap: 3px;
 			}
 			.wrap-jp {
 				display: none;
 				align-items: center;
-				gap: 4px;
+				gap: 3px;
 			}
 			body.jp-mode .wrap-my {
 				display: none;
@@ -644,163 +545,235 @@
 				display: flex;
 			}
 
+			.mini-select {
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-default);
+				padding: 4px 3px;
+				border-radius: var(--radius-sm);
+				font-family: 'DM Mono', monospace;
+				font-size: 12px;
+				outline: none;
+				cursor: pointer;
+				transition: all 0.15s;
+				appearance: none;
+				-webkit-appearance: none;
+				text-align: center;
+				min-width: 38px;
+				height: 30px;
+			}
+			.mini-select:focus {
+				border-color: var(--color-accent-emphasis);
+				box-shadow: 0 0 0 3px var(--color-accent-muted);
+			}
+			.period-select {
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-default);
+				padding: 4px 6px;
+				border-radius: var(--radius-sm);
+				font-family: 'Noto Sans Myanmar', sans-serif;
+				font-size: 11px;
+				outline: none;
+				cursor: pointer;
+				transition: all 0.15s;
+				appearance: none;
+				-webkit-appearance: none;
+				min-width: 70px;
+				height: 30px;
+			}
+			.period-select:focus {
+				border-color: var(--color-accent-emphasis);
+				box-shadow: 0 0 0 3px var(--color-accent-muted);
+			}
+			.jp-min-select {
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-default);
+				padding: 4px 3px;
+				border-radius: var(--radius-sm);
+				font-family: 'DM Mono', monospace;
+				font-size: 12px;
+				outline: none;
+				cursor: pointer;
+				transition: all 0.15s;
+				appearance: none;
+				-webkit-appearance: none;
+				min-width: 42px;
+				text-align: center;
+				height: 30px;
+				display: none;
+			}
+			body.jp-mode .jp-min-select {
+				display: inline-block;
+			}
+
 			.time-sep {
-				color: var(--text-muted);
+				color: var(--color-fg-subtle);
 				font-size: 11px;
 			}
 			.arrow-sep {
-				color: var(--text-muted);
+				color: var(--color-fg-subtle);
 				font-size: 12px;
 				padding: 0 2px;
 			}
 
-			/* Remove session btn */
+			/* Remove btn */
 			.remove-session-btn {
 				background: transparent;
-				border: 1px solid rgba(224, 92, 106, 0.25);
-				color: rgba(224, 92, 106, 0.6);
-				width: 28px;
-				height: 28px;
-				border-radius: 6px;
-				font-size: 16px;
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-muted);
+				width: 26px;
+				height: 26px;
+				border-radius: var(--radius-sm);
+				font-size: 14px;
 				cursor: pointer;
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				transition: all 0.2s;
+				transition: all 0.15s;
 				flex-shrink: 0;
+				line-height: 1;
 			}
 			.remove-session-btn:hover {
-				background: rgba(224, 92, 106, 0.12);
-				border-color: var(--danger);
-				color: var(--danger);
+				background: var(--color-danger-subtle);
+				border-color: var(--color-danger-fg);
+				color: var(--color-danger-fg);
 			}
 
-			/* Generate btn */
+			/* ── Generate button (GitHub primary) ── */
+			.btn-actions {
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+				margin-top: 20px;
+			}
 			.generate-btn {
 				width: 100%;
-				padding: 16px;
-				background: linear-gradient(135deg, #f5a623, #e8672a);
+				padding: 9px 16px;
+				background: #1f883d;
+				background: linear-gradient(180deg, #2da44e 0%, #218a38 100%);
 				color: #fff;
-				border: none;
-				border-radius: 10px;
+				border: 1px solid rgba(31, 35, 40, 0.15);
+				border-radius: var(--radius-md);
 				font-family: 'DM Mono', monospace;
-				font-size: 14px;
-				letter-spacing: 2px;
-				text-transform: uppercase;
+				font-size: 13px;
+				font-weight: 500;
+				letter-spacing: 0.5px;
 				cursor: pointer;
-				transition: all 0.3s;
-				margin-top: 28px;
-				position: relative;
-				overflow: hidden;
-			}
-			body.jp-mode .generate-btn {
-				background: linear-gradient(135deg, #5a9fd4, #7eb8f7);
-			}
-			.generate-btn::before {
-				content: '';
-				position: absolute;
-				inset: 0;
-				background: rgba(255, 255, 255, 0.1);
-				transform: translateX(-100%);
-				transition: transform 0.3s;
-			}
-			.generate-btn:hover::before {
-				transform: translateX(0);
+				transition: all 0.15s;
+				box-shadow:
+					0 1px 0 rgba(31, 35, 40, 0.1),
+					inset 0 1px 0 rgba(255, 255, 255, 0.08);
 			}
 			.generate-btn:hover {
-				transform: translateY(-1px);
-				box-shadow: 0 8px 30px rgba(245, 166, 35, 0.3);
-			}
-			body.jp-mode .generate-btn:hover {
-				box-shadow: 0 8px 30px rgba(126, 184, 247, 0.3);
+				background: linear-gradient(180deg, #2c974b 0%, #1d7f34 100%);
+				box-shadow: var(--shadow-md);
 			}
 			.generate-btn:active {
-				transform: translateY(0);
+				transform: scale(0.99);
+			}
+			body.jp-mode .generate-btn {
+				background: linear-gradient(180deg, #1a7dc4 0%, #1461a0 100%);
+			}
+			body.jp-mode .generate-btn:hover {
+				background: linear-gradient(180deg, #1a75b8 0%, #1155a0 100%);
 			}
 
-			/* Output card */
+			.reset-btn {
+				width: 100%;
+				padding: 7px 16px;
+				background: var(--color-canvas-default);
+				color: var(--color-danger-fg);
+				border: 1px solid var(--color-border-default);
+				border-radius: var(--radius-md);
+				font-family: 'DM Mono', monospace;
+				font-size: 12px;
+				letter-spacing: 0.5px;
+				cursor: pointer;
+				transition: all 0.15s;
+			}
+			.reset-btn:hover {
+				background: var(--color-danger-subtle);
+				border-color: var(--color-danger-fg);
+			}
+
+			/* ── Output card ── */
 			.output-card {
-				background: var(--surface);
-				border: 1px solid var(--border);
-				border-radius: 16px;
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				border-radius: var(--radius-lg);
 				overflow: hidden;
 				display: none;
-				animation: fadeUp 0.5s ease both;
-				box-shadow: 0 0 60px var(--card-glow);
+				box-shadow: var(--shadow-md);
 			}
 			.output-card.visible {
 				display: block;
+				animation: fadeUp 0.3s ease both;
 			}
 			.output-header {
-				background: linear-gradient(
-					135deg,
-					rgba(245, 166, 35, 0.12),
-					rgba(232, 103, 42, 0.08)
-				);
-				border-bottom: 1px solid var(--border);
-				padding: 20px 28px;
+				background: var(--color-canvas-subtle);
+				border-bottom: 1px solid var(--color-border-default);
+				padding: 10px 16px;
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
-				transition: background 0.4s;
-			}
-			body.jp-mode .output-header {
-				background: linear-gradient(
-					135deg,
-					rgba(126, 184, 247, 0.1),
-					rgba(180, 130, 240, 0.07)
-				);
+				gap: 8px;
 			}
 			.output-title {
 				font-size: 12px;
-				letter-spacing: 3px;
+				font-weight: 600;
+				color: var(--color-fg-default);
 				text-transform: uppercase;
-				color: var(--accent);
-				transition: color 0.3s;
+				letter-spacing: 0.8px;
+				display: flex;
+				align-items: center;
+				gap: 6px;
 			}
-			body.jp-mode .output-title {
-				color: var(--jp-accent);
+			.output-title::before {
+				content: '';
+				width: 8px;
+				height: 8px;
+				background: var(--color-success-fg);
+				border-radius: 50%;
+				flex-shrink: 0;
 			}
 			.copy-btn {
-				background: rgba(245, 166, 35, 0.1);
-				border: 1px solid rgba(245, 166, 35, 0.3);
-				color: var(--accent);
-				padding: 8px 18px;
-				border-radius: 6px;
-				font-family: inherit;
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-fg-default);
+				padding: 5px 12px;
+				border-radius: var(--radius-sm);
+				font-family: 'DM Mono', monospace;
 				font-size: 11px;
-				letter-spacing: 2px;
-				text-transform: uppercase;
+				font-weight: 500;
 				cursor: pointer;
-				transition: all 0.2s;
+				transition: all 0.15s;
+				display: flex;
+				align-items: center;
+				gap: 5px;
+				box-shadow: var(--shadow-sm);
 			}
 			.copy-btn:hover {
-				background: rgba(245, 166, 35, 0.2);
-			}
-			body.jp-mode .copy-btn {
-				background: rgba(126, 184, 247, 0.1);
-				border-color: rgba(126, 184, 247, 0.3);
-				color: var(--jp-accent);
-			}
-			body.jp-mode .copy-btn:hover {
-				background: rgba(126, 184, 247, 0.2);
+				background: var(--color-canvas-subtle);
+				border-color: var(--color-border-default);
 			}
 
 			.output-content {
-				padding: 32px 28px;
+				padding: 16px;
 			}
 			.output-text {
 				font-family: 'Noto Sans Myanmar', sans-serif;
-				font-size: 15px;
-				line-height: 2.1;
-				color: var(--text);
+				font-size: 14px;
+				line-height: 2;
+				color: var(--color-fg-default);
 				white-space: pre-wrap;
-				background: var(--surface2);
-				border: 1px solid var(--border);
-				border-radius: 10px;
-				padding: 24px;
-				min-height: 120px;
+				background: var(--color-canvas-subtle);
+				border: 1px solid var(--color-border-default);
+				border-radius: var(--radius-sm);
+				padding: 16px;
+				min-height: 100px;
+				font-variant-numeric: tabular-nums;
 			}
 			body.jp-mode .output-text {
 				font-family: 'Noto Sans JP', sans-serif;
@@ -808,224 +781,314 @@
 			}
 
 			/* Preview table */
+			.preview-table-wrap {
+				margin-top: 16px;
+				border: 1px solid var(--color-border-default);
+				border-radius: var(--radius-sm);
+				overflow: hidden;
+			}
 			.preview-table {
 				width: 100%;
 				border-collapse: collapse;
-				margin-top: 24px;
-				font-size: 14px;
+				font-size: 12px;
+				table-layout: fixed;
 			}
 			.preview-table th {
-				background: rgba(245, 166, 35, 0.08);
-				color: var(--accent);
+				background: var(--color-canvas-subtle);
+				color: var(--color-fg-muted);
 				font-size: 10px;
-				letter-spacing: 2px;
+				font-weight: 600;
+				letter-spacing: 0.7px;
 				text-transform: uppercase;
 				font-family: 'DM Mono', monospace;
-				padding: 12px 16px;
+				padding: 7px 10px;
 				text-align: left;
-				border-bottom: 1px solid var(--border);
-				transition:
-					background 0.3s,
-					color 0.3s;
+				border-bottom: 1px solid var(--color-border-default);
+				white-space: nowrap;
 			}
-			body.jp-mode .preview-table th {
-				background: rgba(126, 184, 247, 0.08);
-				color: var(--jp-accent);
+			/* Column widths: date=52px, day=80px, sessions=rest */
+			.preview-table th:nth-child(1),
+			.preview-table td:nth-child(1) {
+				width: 52px;
 			}
+			.preview-table th:nth-child(2),
+			.preview-table td:nth-child(2) {
+				width: 80px;
+			}
+
 			.preview-table td {
-				padding: 10px 16px;
-				border-bottom: 1px solid rgba(42, 48, 64, 0.6);
+				padding: 7px 10px;
+				border-bottom: 1px solid var(--color-border-subtle);
 				vertical-align: top;
+				font-family: 'DM Mono', monospace;
+				font-size: 12px;
+				word-break: break-word;
 			}
 			body.jp-mode .preview-table td {
 				font-family: 'Noto Sans JP', sans-serif;
+				font-size: 11px;
 			}
 			.preview-table tr:last-child td {
 				border-bottom: none;
 			}
 			.preview-table tr:hover td {
-				background: rgba(245, 166, 35, 0.03);
+				background: var(--color-canvas-subtle);
 			}
-			body.jp-mode .preview-table tr:hover td {
-				background: rgba(126, 184, 247, 0.03);
+
+			.date-cell {
+				font-weight: 600;
+				color: var(--color-fg-default);
+				white-space: nowrap;
+			}
+			.day-cell {
+				color: var(--color-fg-muted);
+				font-size: 11px;
 			}
 
 			.status-off {
-				color: var(--danger);
-				font-size: 12px;
-				background: rgba(224, 92, 106, 0.1);
-				padding: 3px 10px;
-				border-radius: 4px;
-				border: 1px solid rgba(224, 92, 106, 0.2);
+				color: var(--color-danger-fg);
+				font-size: 10px;
+				background: var(--color-danger-subtle);
+				padding: 2px 7px;
+				border-radius: 20px;
+				border: 1px solid rgba(207, 34, 46, 0.25);
 				display: inline-block;
+				font-weight: 500;
+				white-space: nowrap;
 			}
 			.status-session {
 				display: flex;
 				flex-direction: column;
-				gap: 5px;
+				gap: 3px;
 			}
 			.session-chip {
-				display: inline-flex;
-				align-items: center;
-				gap: 6px;
-				font-size: 12px;
-				color: var(--success);
-				background: rgba(76, 175, 132, 0.07);
-				border: 1px solid rgba(76, 175, 132, 0.2);
-				border-radius: 5px;
-				padding: 3px 10px;
+				display: flex;
+				align-items: flex-start;
+				flex-wrap: wrap;
+				gap: 4px;
+				font-size: 11px;
+				color: var(--color-success-fg);
+				background: var(--color-success-subtle);
+				border: 1px solid rgba(26, 127, 55, 0.2);
+				border-radius: 6px;
+				padding: 3px 7px;
+				line-height: 1.4;
 			}
 			.session-shop-tag {
-				font-size: 11px;
-				color: var(--accent);
-				background: rgba(245, 166, 35, 0.1);
-				border: 1px solid rgba(245, 166, 35, 0.25);
-				border-radius: 4px;
-				padding: 1px 7px;
+				font-size: 10px;
+				color: var(--color-fg-default);
+				background: var(--color-canvas-inset);
+				border: 1px solid var(--color-border-default);
+				border-radius: 3px;
+				padding: 0 5px;
 				white-space: nowrap;
-				transition: all 0.3s;
+				font-weight: 600;
+				align-self: center;
+				flex-shrink: 0;
 			}
 			body.jp-mode .session-shop-tag {
-				color: var(--jp-accent);
-				background: rgba(126, 184, 247, 0.1);
-				border-color: rgba(126, 184, 247, 0.25);
 				font-family: 'Noto Sans JP', sans-serif;
 			}
-
-			@keyframes fadeDown {
-				from {
-					opacity: 0;
-					transform: translateY(-20px);
+			.session-time {
+				white-space: nowrap;
+				flex-shrink: 0;
+			}
+			@media (max-width: 400px) {
+				.preview-table th:nth-child(2),
+				.preview-table td:nth-child(2) {
+					width: 60px;
 				}
-				to {
-					opacity: 1;
-					transform: translateY(0);
+				.session-chip {
+					font-size: 10px;
+				}
+				.preview-table td {
+					padding: 6px 7px;
 				}
 			}
+
+			/* Toast */
+			#saveToast {
+				position: fixed;
+				bottom: 20px;
+				right: 20px;
+				z-index: 999;
+				background: var(--color-canvas-default);
+				border: 1px solid var(--color-border-default);
+				color: var(--color-success-fg);
+				font-family: 'DM Mono', monospace;
+				font-size: 11px;
+				letter-spacing: 0.5px;
+				padding: 6px 14px;
+				border-radius: var(--radius-sm);
+				opacity: 0;
+				transform: translateY(6px);
+				transition:
+					opacity 0.25s,
+					transform 0.25s;
+				pointer-events: none;
+				box-shadow: var(--shadow-overlay);
+				display: flex;
+				align-items: center;
+				gap: 6px;
+			}
+			#saveToast.show {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
 			@keyframes fadeUp {
 				from {
 					opacity: 0;
-					transform: translateY(20px);
+					transform: translateY(10px);
 				}
 				to {
 					opacity: 1;
 					transform: translateY(0);
-				}
-			}
-
-			@media (max-width: 700px) {
-				.session-row {
-					grid-template-columns: 1fr;
-					gap: 10px;
-				}
-				.builder-card {
-					padding: 20px;
-				}
-				.output-content {
-					padding: 20px;
 				}
 			}
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<div class="header">
-				<div class="header-badge">Shift Schedule Generator</div>
-				<h1>WORK SCHEDULE</h1>
-				<div class="header-sub sub-my">အလုပ်ချိန်ဇယားပြုလုပ်ရာနေရာ</div>
-				<div class="header-sub sub-jp">シフトスケジュール作成ツール</div>
-			</div>
-
-			<!-- Mode switcher -->
-			<div class="mode-switcher">
-				<button class="mode-btn active-my" id="btnMy" onclick="setMode('my')">
-					🇲🇲 Myanmar (12h)
-				</button>
-				<button class="mode-btn" id="btnJp" onclick="setMode('jp')">
-					🇯🇵 日本語 (24h)
-				</button>
-			</div>
-
-			<div class="builder-card">
-				<div class="section-label">
-					<span class="lbl-my">Basic Info · အခြေခံအချက်အလက်</span>
-					<span class="lbl-jp">基本情報</span>
-				</div>
-
-				<div class="grid-2" style="margin-bottom: 28px">
-					<div class="field">
-						<label
-							><span class="lbl-my">Month · လ</span
-							><span class="lbl-jp">月</span></label
-						>
-						<select id="monthSelect"></select>
-					</div>
-					<div class="field">
-						<label
-							><span class="lbl-my">Week · အပတ်</span
-							><span class="lbl-jp">週</span></label
-						>
-						<select id="weekNote"></select>
+		<!-- Top bar -->
+		<div class="gh-topbar">
+			<div class="gh-topbar-inner">
+				<div class="gh-brand">
+					<div class="gh-brand-icon">🌸</div>
+					<div class="gh-brand-text">
+						<span class="gh-brand-name">Schedule Gen</span>
+						<!-- <span class="gh-brand-sep">/</span> -->
+						<span class="gh-brand-repo">For H❤️</span>
 					</div>
 				</div>
-
-				<div class="grid-2" style="margin-bottom: 28px">
-					<div class="field">
-						<label
-							><span class="lbl-my">Start Date · စတင်သည့်ရက်</span
-							><span class="lbl-jp">開始日</span></label
-						>
-						<select id="startDateInput"></select>
-					</div>
-				</div>
-
-				<div class="section-label">
-					<span class="lbl-my">Weekly Schedule · အပတ်စဉ်အချိန်ဇယား</span>
-					<span class="lbl-jp">週間スケジュール</span>
-				</div>
-
-				<div id="scheduleRows"></div>
-
-				<button class="generate-btn" onclick="generateSchedule()">
-					<span class="lbl-my">✦ Generate Schedule · ဇယားပြုလုပ်ပါ</span>
-					<span class="lbl-jp">✦ スケジュールを生成する</span>
-				</button>
-			</div>
-
-			<div class="output-card" id="outputCard">
-				<div class="output-header">
-					<div class="output-title">
-						<span class="lbl-my">Generated Schedule · ထွက်ပေါ်သောဇယား</span>
-						<span class="lbl-jp">生成されたスケジュール</span>
-					</div>
-					<button class="copy-btn" onclick="copySchedule()">Copy</button>
-				</div>
-				<div class="output-content">
-					<div class="output-text" id="outputText"></div>
-					<table class="preview-table">
-						<thead>
-							<tr>
-								<th>
-									<span class="lbl-my">Date</span
-									><span class="lbl-jp">日</span>
-								</th>
-								<th>
-									<span class="lbl-my">Day</span
-									><span class="lbl-jp">曜日</span>
-								</th>
-								<th>
-									<span class="lbl-my">Sessions · ရောက်ချိန်</span
-									><span class="lbl-jp">シフト</span>
-								</th>
-							</tr>
-						</thead>
-						<tbody id="previewBody"></tbody>
-					</table>
+				<div class="mode-switcher">
+					<button class="mode-btn active-my" id="btnMy" onclick="setMode('my')">
+						🇲🇲 Myanmar
+					</button>
+					<button class="mode-btn" id="btnJp" onclick="setMode('jp')">
+						🇯🇵 日本語
+					</button>
 				</div>
 			</div>
 		</div>
+
+		<div class="container">
+			<!-- Page header -->
+			<div class="page-header">
+				<h1>Shift Schedule Generator</h1>
+				<p>
+					<span class="sub-my">အလုပ်ချိန်ဇယားပြုလုပ်ရာနေရာ</span>
+					<span class="sub-jp">シフトスケジュール作成ツール</span>
+				</p>
+			</div>
+
+			<!-- Basic info -->
+			<div class="gh-box" style="margin-bottom: 16px">
+				<div class="gh-box-header">
+					<span class="gh-box-title">
+						<span class="lbl-my">Basic Info</span>
+						<span class="lbl-jp">基本情報</span>
+					</span>
+				</div>
+				<div class="gh-box-body">
+					<div class="grid-2">
+						<div class="field">
+							<label>
+								<span class="lbl-my">Month · လ</span>
+								<span class="lbl-jp">月</span>
+							</label>
+							<select id="monthSelect"></select>
+						</div>
+						<div class="field">
+							<label>
+								<span class="lbl-my">Start Date · စတင်သည့်ရက်</span>
+								<span class="lbl-jp">開始日</span>
+							</label>
+							<select id="startDateInput"></select>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Schedule rows -->
+			<div class="gh-box">
+				<div class="gh-box-header">
+					<span class="gh-box-title">
+						<span class="lbl-my">Weekly Schedule · အပတ်စဉ်အချိန်ဇယား</span>
+						<span class="lbl-jp">週間スケジュール</span>
+					</span>
+				</div>
+				<div class="gh-box-body">
+					<div id="scheduleRows"></div>
+					<div class="btn-actions">
+						<button class="generate-btn" onclick="generateSchedule()">
+							<span class="lbl-my">✦ Generate Schedule · ဇယားပြုလုပ်ပါ</span>
+							<span class="lbl-jp">✦ スケジュールを生成する</span>
+						</button>
+						<button class="reset-btn" onclick="clearSavedData()">
+							<span class="lbl-my">↺ Reset to Defaults</span>
+							<span class="lbl-jp">↺ リセット</span>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- Output -->
+			<div class="output-card" id="outputCard">
+				<div class="output-header">
+					<div class="output-title">
+						<span class="lbl-my">Generated Schedule</span>
+						<span class="lbl-jp">生成されたスケジュール</span>
+					</div>
+					<button class="copy-btn" onclick="copySchedule()">
+						<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+							<path
+								d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"
+							/>
+							<path
+								d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"
+							/>
+						</svg>
+						Copy
+					</button>
+				</div>
+				<div class="output-content">
+					<div class="output-text" id="outputText"></div>
+					<div class="preview-table-wrap">
+						<table class="preview-table">
+							<thead>
+								<tr>
+									<th>
+										<span class="lbl-my">Date</span
+										><span class="lbl-jp">日</span>
+									</th>
+									<th>
+										<span class="lbl-my">Day</span
+										><span class="lbl-jp">曜日</span>
+									</th>
+									<th>
+										<span class="lbl-my">Sessions</span
+										><span class="lbl-jp">シフト</span>
+									</th>
+								</tr>
+							</thead>
+							<tbody id="previewBody"></tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div id="saveToast">
+			<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
+				<path
+					d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"
+				/>
+			</svg>
+			Saved
+		</div>
+
 		<script>
-			// ── Constants ────────────────────────────────────────────────
+			// ── Constants ─────────────────────────────────────────────────────
 			const DAYS_MY = [
 				'တနင်္လာ',
 				'အင်္ဂါ',
@@ -1045,40 +1108,38 @@
 			const SHOPS_JP = ['橿原', '桜井', '橿原／桜井'];
 
 			const MONTHS_MY = [
-				{ v: 'ဇန်နဝါရီ', l: 'ဇန်နဝါရီ (January)' },
-				{ v: 'ဖေဖော်ဝါရီ', l: 'ဖေဖော်ဝါရီ (February)' },
-				{ v: 'မတ်', l: 'မတ် (March)' },
-				{ v: 'ဧပြီ', l: 'ဧပြီ (April)' },
-				{ v: 'မေ', l: 'မေ (May)' },
-				{ v: 'ဇွန်', l: 'ဇွန် (June)' },
-				{ v: 'ဇူလိုင်', l: 'ဇူလိုင် (July)' },
-				{ v: 'သြဂုတ်', l: 'သြဂုတ် (August)' },
-				{ v: 'စက်တင်ဘာ', l: 'စက်တင်ဘာ (September)' },
-				{ v: 'အောက်တိုဘာ', l: 'အောက်တိုဘာ (October)' },
-				{ v: 'နိုဝင်ဘာ', l: 'နိုဝင်ဘာ (November)' },
-				{ v: 'ဒီဇင်ဘာ', l: 'ဒီဇင်ဘာ (December)' },
+				{ v: 'ဇန်နဝါရီ', l: 'ဇန်နဝါရီ (January)', days: 31 },
+				{ v: 'ဖေဖော်ဝါရီ', l: 'ဖေဖော်ဝါရီ (February)', days: 28 },
+				{ v: 'မတ်', l: 'မတ် (March)', days: 31 },
+				{ v: 'ဧပြီ', l: 'ဧပြီ (April)', days: 30 },
+				{ v: 'မေ', l: 'မေ (May)', days: 31 },
+				{ v: 'ဇွန်', l: 'ဇွန် (June)', days: 30 },
+				{ v: 'ဇူလိုင်', l: 'ဇူလိုင် (July)', days: 31 },
+				{ v: 'သြဂုတ်', l: 'သြဂုတ် (August)', days: 31 },
+				{ v: 'စက်တင်ဘာ', l: 'စက်တင်ဘာ (September)', days: 30 },
+				{ v: 'အောက်တိုဘာ', l: 'အောက်တိုဘာ (October)', days: 31 },
+				{ v: 'နိုဝင်ဘာ', l: 'နိုဝင်ဘာ (November)', days: 30 },
+				{ v: 'ဒီဇင်ဘာ', l: 'ဒီဇင်ဘာ (December)', days: 31 },
 			];
 			const MONTHS_JP = [
-				{ v: '1月', l: '1月 (January)' },
-				{ v: '2月', l: '2月 (February)' },
-				{ v: '3月', l: '3月 (March)' },
-				{ v: '4月', l: '4月 (April)' },
-				{ v: '5月', l: '5月 (May)' },
-				{ v: '6月', l: '6月 (June)' },
-				{ v: '7月', l: '7月 (July)' },
-				{ v: '8月', l: '8月 (August)' },
-				{ v: '9月', l: '9月 (September)' },
-				{ v: '10月', l: '10月 (October)' },
-				{ v: '11月', l: '11月 (November)' },
-				{ v: '12月', l: '12月 (December)' },
+				{ v: '1月', l: '1月 (January)', days: 31 },
+				{ v: '2月', l: '2月 (February)', days: 28 },
+				{ v: '3月', l: '3月 (March)', days: 31 },
+				{ v: '4月', l: '4月 (April)', days: 30 },
+				{ v: '5月', l: '5月 (May)', days: 31 },
+				{ v: '6月', l: '6月 (June)', days: 30 },
+				{ v: '7月', l: '7月 (July)', days: 31 },
+				{ v: '8月', l: '8月 (August)', days: 31 },
+				{ v: '9月', l: '9月 (September)', days: 30 },
+				{ v: '10月', l: '10月 (October)', days: 31 },
+				{ v: '11月', l: '11月 (November)', days: 30 },
+				{ v: '12月', l: '12月 (December)', days: 31 },
 			];
-			const WEEKS_MY = ['ဒီအပတ်', 'နောက်အပတ်', 'ဒုတိယအပတ်', 'တတိယအပတ်'];
-			const WEEKS_JP = ['今週', '来週', '第2週', '第3週'];
 
-			const LS_KEY = 'shift_schedule_v3';
+			const LS_KEY = 'shift_schedule_v4';
 			let currentMode = 'my';
 
-			// ── Default data ─────────────────────────────────────────────
+			// ── Default data ──────────────────────────────────────────────────
 			const DS = {
 				shop: 'Kashihara',
 				startH: '6',
@@ -1100,12 +1161,55 @@
 				{ off: false, sessions: [{ ...DS, shop: 'Sakurai' }] },
 			];
 
-			// ── LocalStorage ─────────────────────────────────────────────
+			// ── Date helpers ──────────────────────────────────────────────────
+			// Get days in selected month
+			function getDaysInSelectedMonth() {
+				const monthVal = document.getElementById('monthSelect')?.value ?? '';
+				const arr = currentMode === 'jp' ? MONTHS_JP : MONTHS_MY;
+				const found = arr.find((m) => m.v === monthVal);
+				return found ? found.days : 31;
+			}
+
+			// Given a start date and 7 days, return array of {date, monthOffset}
+			// where monthOffset = 0 means current month, 1 means next month
+			function computeDates(startDate) {
+				const daysInMonth = getDaysInSelectedMonth();
+				const result = [];
+				for (let i = 0; i < 7; i++) {
+					let d = startDate + i;
+					let overflow = false;
+					if (d > daysInMonth) {
+						d = d - daysInMonth; // wraps to next month day number
+						overflow = true;
+					}
+					result.push({ date: d, overflow });
+				}
+				return result;
+			}
+
+			// Get month label for display
+			function getMonthLabel() {
+				const arr = currentMode === 'jp' ? MONTHS_JP : MONTHS_MY;
+				const val = document.getElementById('monthSelect')?.value ?? '';
+				const found = arr.find((m) => m.v === val);
+				return found ? found.v : '';
+			}
+
+			function getNextMonthLabel() {
+				const arr = currentMode === 'jp' ? MONTHS_JP : MONTHS_MY;
+				const val = document.getElementById('monthSelect')?.value ?? '';
+				const idx = arr.findIndex((m) => m.v === val);
+				if (idx < 0) return '';
+				const next = arr[(idx + 1) % arr.length];
+				return next ? next.v : '';
+			}
+
+			// ── LocalStorage ──────────────────────────────────────────────────
 			function loadState() {
 				try {
 					const r = localStorage.getItem(LS_KEY);
 					return r ? JSON.parse(r) : null;
-				} catch (e) {
+				} catch {
 					return null;
 				}
 			}
@@ -1137,27 +1241,23 @@
 								startDate:
 									document.getElementById('startDateInput')?.value ??
 									'9',
-								weekNote:
-									document.getElementById('weekNote')?.value ??
-									WEEKS_MY[0],
 								mode: currentMode,
 							},
 							days,
 						}),
 					);
 					flashSave();
-				} catch (e) {}
+				} catch {}
 			}
-
 			function flashSave() {
 				const el = document.getElementById('saveToast');
 				if (!el) return;
 				el.classList.add('show');
 				clearTimeout(el._t);
-				el._t = setTimeout(() => el.classList.remove('show'), 1800);
+				el._t = setTimeout(() => el.classList.remove('show'), 1600);
 			}
 
-			// ── Mode switch ──────────────────────────────────────────────
+			// ── Mode switch ───────────────────────────────────────────────────
 			function setMode(mode) {
 				currentMode = mode;
 				document.body.classList.toggle('jp-mode', mode === 'jp');
@@ -1166,11 +1266,7 @@
 				document.getElementById('btnJp').className =
 					'mode-btn' + (mode === 'jp' ? ' active-jp' : '');
 				rebuildMonthSelect();
-				rebuildWeekSelect();
-				// also rebuild shop selects to show correct language
 				document.querySelectorAll('.shop-select').forEach((sel) => {
-					const dayIdx = sel.closest('.session-row')?.dataset?.day;
-					if (dayIdx === undefined) return;
 					const cur = sel.value;
 					sel.innerHTML = shopOptions(cur);
 				});
@@ -1178,11 +1274,11 @@
 				saveState();
 			}
 
-			// ── Dropdowns ────────────────────────────────────────────────
+			// ── Dropdowns ─────────────────────────────────────────────────────
 			function rebuildMonthSelect(savedVal) {
 				const sel = document.getElementById('monthSelect');
 				const months = currentMode === 'jp' ? MONTHS_JP : MONTHS_MY;
-				const cur = savedVal ?? sel.value;
+				const cur = savedVal ?? sel?.value ?? '';
 				sel.innerHTML =
 					`<option value="">— ${currentMode === 'jp' ? '選択してください' : 'မရွေးချယ်ရသေးပါ'} —</option>` +
 					months
@@ -1191,30 +1287,39 @@
 								`<option value="${m.v}"${m.v === cur ? ' selected' : ''}>${m.l}</option>`,
 						)
 						.join('');
+				// rebuild start date since days-in-month may change
+				rebuildStartDate();
+				sel.addEventListener(
+					'change',
+					() => {
+						rebuildStartDate();
+						saveState();
+					},
+					{ once: true },
+				);
 			}
-			function rebuildWeekSelect(savedVal) {
-				const sel = document.getElementById('weekNote');
-				const weeks = currentMode === 'jp' ? WEEKS_JP : WEEKS_MY;
-				const cur = savedVal ?? sel.value;
-				// map saved my-week to jp index or vice versa
-				let selIdx = weeks.indexOf(cur);
-				if (selIdx < 0) {
-					// try cross-map by index
-					const srcArr = currentMode === 'jp' ? WEEKS_MY : WEEKS_JP;
-					const idx = srcArr.indexOf(cur);
-					selIdx = idx >= 0 ? idx : 0;
-				}
-				sel.innerHTML = weeks
-					.map(
-						(w, i) =>
-							`<option value="${w}"${i === selIdx ? ' selected' : ''}>${w}</option>`,
-					)
-					.join('');
+
+			function rebuildStartDate(savedVal) {
+				const sel = document.getElementById('startDateInput');
+				if (!sel) return;
+				const daysInMonth = getDaysInSelectedMonth();
+				// Cap max to daysInMonth - 6 so last day can always fit a 7-day week within reason
+				// Actually allow any start date up to last day; overflow days will roll to next month
+				const cur = savedVal ?? sel?.value ?? '9';
+				sel.innerHTML = Array.from(
+					{ length: daysInMonth },
+					(_, i) =>
+						`<option value="${i + 1}"${String(i + 1) === String(cur) ? ' selected' : ''}>${i + 1}</option>`,
+				).join('');
+			}
+
+			function buildStartDate(saved) {
+				const val = saved?.meta?.startDate ?? '9';
+				rebuildStartDate(val);
 			}
 
 			function shopOptions(selected) {
 				const shops = currentMode === 'jp' ? SHOPS_JP : SHOPS_EN;
-				// normalize to index
 				const enIdx = SHOPS_EN.indexOf(selected);
 				const jpIdx = SHOPS_JP.indexOf(selected);
 				const idx = enIdx >= 0 ? enIdx : jpIdx >= 0 ? jpIdx : 0;
@@ -1246,44 +1351,40 @@
 				).join('');
 			}
 
-			// ── Session row HTML ─────────────────────────────────────────
+			// ── Session row HTML ──────────────────────────────────────────────
 			function makeSessionHTML(dayIdx, sesIdx, ses, canRemove) {
 				return `
-  <div class="session-row" data-day="${dayIdx}" data-ses="${sesIdx}">
-    <span class="session-num">Session ${sesIdx + 1}</span>
-
-    <select class="shop-select" onchange="saveState()">${shopOptions(ses.shop ?? 'Kashihara')}</select>
-
-    <div class="time-group">
-      <div class="wrap-my time-select-wrap">
-        <select class="mini-select s-startH" onchange="saveState()">${h12opts(ses.startH ?? '6')}</select>
-        <span class="time-sep">:</span>
-        <select class="period-select s-startP" onchange="saveState()">${popts(ses.startP ?? 'ညနေ')}</select>
-      </div>
-      <div class="wrap-jp time-select-wrap">
-        <select class="mini-select s-startH24" onchange="saveState()">${h24opts(ses.startH24 ?? '10')}</select>
-        <span class="time-sep">:</span>
-        <select class="jp-min-select s-startM" onchange="saveState()">${mopts(ses.startM ?? '00')}</select>
-      </div>
+<div class="session-row" data-day="${dayIdx}" data-ses="${sesIdx}">
+  <span class="session-num">Session ${sesIdx + 1}</span>
+  <select class="shop-select" onchange="saveState()">${shopOptions(ses.shop ?? 'Kashihara')}</select>
+  <div class="time-group">
+    <div class="wrap-my time-select-wrap">
+      <select class="mini-select s-startH" onchange="saveState()">${h12opts(ses.startH ?? '6')}</select>
+      <span class="time-sep">:</span>
+      <select class="period-select s-startP" onchange="saveState()">${popts(ses.startP ?? 'ညနေ')}</select>
     </div>
-
-    <div class="time-group">
-      <span class="arrow-sep">→</span>
-      <div class="wrap-my time-select-wrap">
-        <select class="mini-select s-endH" onchange="saveState()">${h12opts(ses.endH ?? '3')}</select>
-        <span class="time-sep">:</span>
-        <select class="period-select s-endP" onchange="saveState()">${popts(ses.endP ?? 'မနက်')}</select>
-      </div>
-      <div class="wrap-jp time-select-wrap">
-        <select class="mini-select s-endH24" onchange="saveState()">${h24opts(ses.endH24 ?? '22')}</select>
-        <span class="time-sep">:</span>
-        <select class="jp-min-select s-endM" onchange="saveState()">${mopts(ses.endM ?? '00')}</select>
-      </div>
+    <div class="wrap-jp time-select-wrap">
+      <select class="mini-select s-startH24" onchange="saveState()">${h24opts(ses.startH24 ?? '10')}</select>
+      <span class="time-sep">:</span>
+      <select class="jp-min-select s-startM" onchange="saveState()">${mopts(ses.startM ?? '00')}</select>
     </div>
-
-    <button class="remove-session-btn" onclick="removeSession(${dayIdx},this)"
-      ${canRemove ? '' : 'style="visibility:hidden;"'}>−</button>
-  </div>`;
+  </div>
+  <div class="time-group">
+    <span class="arrow-sep">→</span>
+    <div class="wrap-my time-select-wrap">
+      <select class="mini-select s-endH" onchange="saveState()">${h12opts(ses.endH ?? '3')}</select>
+      <span class="time-sep">:</span>
+      <select class="period-select s-endP" onchange="saveState()">${popts(ses.endP ?? 'မနက်')}</select>
+    </div>
+    <div class="wrap-jp time-select-wrap">
+      <select class="mini-select s-endH24" onchange="saveState()">${h24opts(ses.endH24 ?? '22')}</select>
+      <span class="time-sep">:</span>
+      <select class="jp-min-select s-endM" onchange="saveState()">${mopts(ses.endM ?? '00')}</select>
+    </div>
+  </div>
+  <button class="remove-session-btn" onclick="removeSession(${dayIdx},this)"
+    ${canRemove ? '' : 'style="visibility:hidden;"'}>−</button>
+</div>`;
 			}
 
 			function addSession(dayIdx) {
@@ -1322,7 +1423,7 @@
 					.classList.toggle('is-off', document.getElementById(`off-${i}`).checked);
 			}
 
-			// ── Build all day rows ───────────────────────────────────────
+			// ── Build day rows ────────────────────────────────────────────────
 			function buildRows(saved) {
 				const container = document.getElementById('scheduleRows');
 				container.innerHTML = '';
@@ -1338,81 +1439,99 @@
 						.map((ses, si) => makeSessionHTML(i, si, ses, sessions.length > 1))
 						.join('');
 					block.innerHTML = `
-      <div class="day-header">
-        <div class="day-header-left">
-          <div class="day-badge">
-            <span class="badge-my">${dayMy}</span>
-            <span class="badge-jp">${dayJp}曜日</span>
-          </div>
-          <label class="off-toggle">
-            <input type="checkbox" id="off-${i}" ${isOff ? 'checked' : ''} onchange="toggleOff(${i});saveState();">
-            <div class="toggle-btn"></div>
-            <span class="off-label">
-              <span class="lbl-my">ပိတ်</span>
-              <span class="lbl-jp">休み</span>
-            </span>
-          </label>
-        </div>
-        <button class="add-session-btn" onclick="addSession(${i})">
-          <span class="lbl-my">+ Add Session</span>
-          <span class="lbl-jp">+ シフト追加</span>
-        </button>
-      </div>
-      <div class="sessions-wrapper" data-day="${i}">${sessHTML}</div>`;
+<div class="day-header">
+  <div class="day-header-left">
+    <div class="day-badge">
+      <span class="badge-my">${dayMy}</span>
+      <span class="badge-jp">${dayJp}曜日</span>
+    </div>
+    <label class="off-toggle">
+      <input type="checkbox" id="off-${i}" ${isOff ? 'checked' : ''} onchange="toggleOff(${i});saveState();">
+      <div class="toggle-btn"></div>
+      <span class="off-label">
+        <span class="lbl-my">ပိတ်</span>
+        <span class="lbl-jp">休み</span>
+      </span>
+    </label>
+  </div>
+  <button class="add-session-btn" onclick="addSession(${i})">
+    <span class="lbl-my">+ Add Session</span>
+    <span class="lbl-jp">+ シフト追加</span>
+  </button>
+</div>
+<div class="sessions-wrapper" data-day="${i}">${sessHTML}</div>`;
 					container.appendChild(block);
 				});
 			}
 
-			function buildStartDate(saved) {
-				const sel = document.getElementById('startDateInput');
-				const val = saved?.meta?.startDate ?? '9';
-				sel.innerHTML = Array.from(
-					{ length: 31 },
-					(_, i) =>
-						`<option value="${i + 1}"${String(i + 1) === String(val) ? ' selected' : ''}>${i + 1}</option>`,
-				).join('');
-			}
 			function attachMetaListeners() {
-				['monthSelect', 'weekNote', 'startDateInput'].forEach((id) => {
-					const el = document.getElementById(id);
-					if (el) el.addEventListener('change', saveState);
-				});
+				const monthSel = document.getElementById('monthSelect');
+				if (monthSel) {
+					monthSel.addEventListener('change', () => {
+						rebuildStartDate();
+						saveState();
+					});
+				}
+				const startSel = document.getElementById('startDateInput');
+				if (startSel) startSel.addEventListener('change', saveState);
 			}
+
 			function clearSavedData() {
 				if (!confirm('Clear all saved data and reset to defaults?')) return;
 				localStorage.removeItem(LS_KEY);
 				location.reload();
 			}
 
-			// ── Generate ─────────────────────────────────────────────────
+			// ── Generate ──────────────────────────────────────────────────────
 			function generateSchedule() {
-				const month = document.getElementById('monthSelect').value;
+				const monthVal = document.getElementById('monthSelect').value;
 				const startDate = parseInt(
 					document.getElementById('startDateInput')?.value || '9',
 				);
 				const isJP = currentMode === 'jp';
+				const daysInMonth = getDaysInSelectedMonth();
+				const currentMonthLabel = getMonthLabel();
+				const nextMonthLabel = getNextMonthLabel();
+
 				const lines = [],
 					tableRows = [];
 
-				if (month) {
-					const end = startDate + 6;
+				// Compute actual calendar dates (handles overflow into next month)
+				const dateMap = computeDates(startDate);
+
+				if (monthVal) {
+					const endInfo = dateMap[6];
+					const endLabel = endInfo.overflow
+						? `${nextMonthLabel} ${endInfo.date}`
+						: `${endInfo.date}`;
+					const startLabel = `${currentMonthLabel} ${startDate}`;
 					lines.push(
 						isJP
-							? `${month} ${startDate}日〜${end}日 シフト表`
-							: `${month} ${startDate} to ${end} - 2025 အချိန်ဇယား`,
+							? `${startLabel}日 〜 ${endLabel}日 シフト表`
+							: `${startLabel} to ${endLabel} - ${new Date().getFullYear()} အချိန်ဇယား`,
 					);
 				}
 				lines.push('');
 
 				for (let i = 0; i < 7; i++) {
-					const date = startDate + i;
+					const { date, overflow } = dateMap[i];
+					const monthPrefix = overflow ? nextMonthLabel : currentMonthLabel;
 					const isOff = document.getElementById(`off-${i}`).checked;
+					const displayDate = monthVal
+						? `${overflow ? monthPrefix + ' ' : ''}${date}`
+						: String(date);
 
 					if (isJP) {
 						const dayJp = DAYS_JP[i];
 						if (isOff) {
-							lines.push(`${date}(${dayJp})- 休み`);
-							tableRows.push({ date, day: dayJp, isOff: true, sessions: [] });
+							lines.push(`${displayDate}(${dayJp})- 休み`);
+							tableRows.push({
+								date: displayDate,
+								day: dayJp,
+								isOff: true,
+								sessions: [],
+								overflow,
+							});
 						} else {
 							const sesEls = document.querySelectorAll(
 								`.session-row[data-day="${i}"]`,
@@ -1424,24 +1543,30 @@
 								endH: row.querySelector('.s-endH24')?.value ?? '22',
 								endM: row.querySelector('.s-endM')?.value ?? '00',
 							}));
-							// Format: single session → no shop if only one, multi → show shop
-							// const timeParts = sessions.map((s) =>
-							// 	sessions.length > 1
-							// 		? `【${s.shop}】${s.startH}:${s.startM}〜${s.endH}:${s.endM}`
-							// 		: `${s.startH}:${s.startM}-${s.endH}:${s.endM}`,
-							// );
 							const timeParts = sessions.map(
 								(s) =>
 									`[${s.shop}] ${s.startH}:${s.startM}-${s.endH}:${s.endM}`,
 							);
-							lines.push(`${date}(${dayJp})- ${timeParts.join(' / ')}`);
-							tableRows.push({ date, day: dayJp, isOff: false, sessions });
+							lines.push(`${displayDate}(${dayJp})- ${timeParts.join(' / ')}`);
+							tableRows.push({
+								date: displayDate,
+								day: dayJp,
+								isOff: false,
+								sessions,
+								overflow,
+							});
 						}
 					} else {
 						const dayMy = DAYS_MY[i];
 						if (isOff) {
-							lines.push(`(${date})${dayMy}- ပိတ်`);
-							tableRows.push({ date, day: dayMy, isOff: true, sessions: [] });
+							lines.push(`(${displayDate})${dayMy}- ပိတ်`);
+							tableRows.push({
+								date: displayDate,
+								day: dayMy,
+								isOff: true,
+								sessions: [],
+								overflow,
+							});
 						} else {
 							const sesEls = document.querySelectorAll(
 								`.session-row[data-day="${i}"]`,
@@ -1459,8 +1584,14 @@
 								(s) =>
 									`[${s.shop}] ${s.startP} ${s.startH}:00 - ${s.endP} ${s.endH}:00`,
 							);
-							lines.push(`(${date})${dayMy}- ${timeParts.join(' / ')}`);
-							tableRows.push({ date, day: dayMy, isOff: false, sessions });
+							lines.push(`(${displayDate})${dayMy}- ${timeParts.join(' / ')}`);
+							tableRows.push({
+								date: displayDate,
+								day: dayMy,
+								isOff: false,
+								sessions,
+								overflow,
+							});
 						}
 					}
 				}
@@ -1478,13 +1609,14 @@
 									const t = isJP
 										? `${s.startH}:${s.startM} → ${s.endH}:${s.endM}`
 										: `${s.startP} ${s.startH}:00 → ${s.endP} ${s.endH}:00`;
-									return `<span class="session-chip"><span class="session-shop-tag">${s.shop}</span>${t}</span>`;
+									return `<span class="session-chip"><span class="session-shop-tag">${s.shop}</span><span class="session-time">${t}</span></span>`;
 								})
 								.join('')}</div>`;
+					const overflowStyle = r.overflow ? 'opacity:0.65;' : '';
 					tr.innerHTML = `
-      <td style="color:${isJP ? 'var(--jp-accent)' : 'var(--accent)'};font-weight:500;">${r.date}</td>
-      <td>${r.day}</td>
-      <td>${cell}</td>`;
+<td class="date-cell" style="${overflowStyle}">${r.date}</td>
+<td class="day-cell">${r.day}</td>
+<td>${cell}</td>`;
 					tbody.appendChild(tr);
 				});
 
@@ -1498,18 +1630,19 @@
 					.writeText(document.getElementById('outputText').textContent)
 					.then(() => {
 						const btn = document.querySelector('.copy-btn');
-						const orig = btn.textContent;
-						btn.textContent = 'Copied ✓';
-						btn.style.cssText +=
-							';background:rgba(76,175,132,0.15);border-color:rgba(76,175,132,0.4);color:var(--success)';
+						const orig = btn.innerHTML;
+						btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg> Copied!`;
+						btn.style.color = 'var(--color-success-fg)';
+						btn.style.borderColor = 'rgba(26,127,55,0.3)';
 						setTimeout(() => {
-							btn.textContent = orig;
-							btn.style.cssText = '';
+							btn.innerHTML = orig;
+							btn.style.color = '';
+							btn.style.borderColor = '';
 						}, 2000);
 					});
 			}
 
-			// ── Init ─────────────────────────────────────────────────────
+			// ── Init ──────────────────────────────────────────────────────────
 			(function init() {
 				const saved = loadState();
 
@@ -1520,58 +1653,23 @@
 					document.getElementById('btnJp').className = 'mode-btn active-jp';
 				}
 
-				// Toast
-				const toast = document.createElement('div');
-				toast.id = 'saveToast';
-				toast.textContent = '✦ Saved';
-				toast.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:999;
-    background:rgba(76,175,132,0.15);border:1px solid rgba(76,175,132,0.35);
-    color:#4caf84;font-family:'DM Mono',monospace;font-size:11px;
-    letter-spacing:2px;padding:8px 18px;border-radius:8px;
-    opacity:0;transform:translateY(8px);transition:opacity 0.3s,transform 0.3s;pointer-events:none;`;
-				document.body.appendChild(toast);
-				const st = document.createElement('style');
-				st.textContent =
-					'#saveToast.show{opacity:1!important;transform:translateY(0)!important;}';
-				document.head.appendChild(st);
-
-				// Reset btn
-				const genBtn = document.querySelector('.generate-btn');
-				const rb = document.createElement('button');
-				rb.innerHTML =
-					'<span class="lbl-my">↺ Reset to Defaults</span><span class="lbl-jp">↺ リセット</span>';
-				rb.onclick = clearSavedData;
-				rb.style.cssText = `width:100%;padding:10px;margin-top:10px;background:transparent;
-    border:1px solid var(--border);color:var(--text-muted);border-radius:8px;
-    font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;`;
-				rb.onmouseenter = () => {
-					rb.style.borderColor = 'rgba(224,92,106,0.4)';
-					rb.style.color = 'var(--danger)';
-				};
-				rb.onmouseleave = () => {
-					rb.style.borderColor = 'var(--border)';
-					rb.style.color = 'var(--text-muted)';
-				};
-				genBtn.insertAdjacentElement('afterend', rb);
-
-				buildStartDate(saved);
 				rebuildMonthSelect(saved?.meta?.month);
-				rebuildWeekSelect(saved?.meta?.weekNote);
+				buildStartDate(saved);
 				buildRows(saved);
 				attachMetaListeners();
 
 				if (saved) {
 					setTimeout(() => {
 						const t = document.getElementById('saveToast');
-						t.textContent = '↺ Restored';
+						t.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0ZM6.5 7.5l-2-2-1 1 3 3 5-5-1-1Z"/></svg> Restored`;
 						t.classList.add('show');
 						setTimeout(() => {
 							t.classList.remove('show');
 							setTimeout(() => {
-								t.textContent = '✦ Saved';
+								t.innerHTML = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"/></svg> Saved`;
 							}, 400);
 						}, 2000);
-					}, 600);
+					}, 500);
 				}
 			})();
 		</script>
